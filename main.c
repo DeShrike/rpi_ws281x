@@ -28,6 +28,15 @@
  */
 
 
+/* modification by Daniel Perron to add  a setpixel function sept 2018
+   Red,green and blue parameter  would have to be switch depending of the strip
+
+  to compile
+     gcc -o test main.c dma.c mailbox.c pcm.c rpihw.c ws2811.c pwm.  
+/*
+
+
+
 static char VERSION[] = "XX.YY.ZZ";
 
 #include <stdint.h>
@@ -63,15 +72,15 @@ static char VERSION[] = "XX.YY.ZZ";
 #define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
 //#define STRIP_TYPE            SK6812_STRIP_RGBW		// SK6812RGBW (NOT SK6812RGB)
 
-#define WIDTH                   8
-#define HEIGHT                  8
+#define WIDTH                   19
+#define HEIGHT                  1
 #define LED_COUNT               (WIDTH * HEIGHT)
 
 int width = WIDTH;
 int height = HEIGHT;
 int led_count = LED_COUNT;
 
-int clear_on_exit = 0;
+int clear_on_exit = 1;
 
 ws2811_t ledstring =
 {
@@ -168,6 +177,22 @@ ws2811_led_t dotcolors_rgbw[] =
 
 };
 
+
+
+void matrix_setLed(int x, int y, unsigned char R, unsigned char G , unsigned char B)
+{
+      if(y >= HEIGHT) return;  // has to be smaller than the number of row
+      if(x  >= WIDTH) return; // has to be smaller than the number of column
+
+      int position = x + (y * WIDTH);
+
+      unsigned long value = (unsigned long) B  << 16;
+      value |= (unsigned long) G  << 8;
+      value |= (unsigned long) R  ;
+      matrix[position]=value;
+}
+
+
 void matrix_bottom(void)
 {
     int i;
@@ -187,12 +212,13 @@ void matrix_bottom(void)
         }
     }
 }
-
 static void ctrl_c_handler(int signum)
 {
 	(void)(signum);
     running = 0;
 }
+
+
 
 static void setup_handlers(void)
 {
@@ -203,6 +229,8 @@ static void setup_handlers(void)
 
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+
+
 }
 
 
@@ -382,6 +410,8 @@ int main(int argc, char *argv[])
 
     matrix = malloc(sizeof(ws2811_led_t) * width * height);
 
+
+
     setup_handlers();
 
     if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS)
@@ -390,11 +420,26 @@ int main(int argc, char *argv[])
         return ret;
     }
 
+int col=0;
+int row=0;
+unsigned char table[7][3]={{0x20,0,0},{0,0x20,0},{0,0,0x20},
+                            {0x20,0x20,0},{0x20,0,0x20},{0,0x20,0x20},{0x20,0x20,0x20}};
+int ci=0;
+
     while (running)
     {
-        matrix_raise();
-        matrix_bottom();
-        matrix_render();
+//        matrix_raise();
+//        matrix_bottom();
+
+
+      matrix_setLed(col,row,table[ci][0],table[ci][1],table[ci][2]);
+      col++;
+      if(col>=WIDTH)
+       {
+         ci = (++ci) % 7;
+         col=0;
+       }
+      matrix_render();
 
         if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS)
         {
