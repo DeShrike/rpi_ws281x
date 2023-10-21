@@ -1,8 +1,6 @@
-.sconsign.dblite
-version.h
 *.pyc
 test
-newtest
+test2
 *.o
 *.a
 *.swp
