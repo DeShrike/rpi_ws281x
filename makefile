@@ -3,13 +3,13 @@ HEADERS=clk.h dma.h gpio.h mailbox.h pcm.h pwm.h rpihw.h version.h ws2811.h
 OBJS=mailbox.o pcm.o pwm.o rpihw.o dma.o ws2811.o
 CFLAGS=-O0
 
-all: test test2 test3
+all: test1 test2 test3
 
-test: test.o $(OBJS)
-	$(CC) $+ -o test
+test1: test1.o $(OBJS)
+	$(CC) $+ -o test1
 
-test.o: test.c $(HEADERS)
-	$(CC) -c $< -o test.o $(CFLAGS)
+test1.o: test1.c $(HEADERS)
+	$(CC) -c $< -o test1.o $(CFLAGS)
 
 ####################
 
@@ -48,4 +48,4 @@ ws2811.o: ws2811.c $(HEADERS)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	rm -f *.o test test2 test3
+	rm -f *.o test1 test2 test3
