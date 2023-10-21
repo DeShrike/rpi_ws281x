@@ -34,8 +34,6 @@
   to compile  use make
 */
 
-
-
 static char VERSION[] = "XX.YY.ZZ";
 
 #include <stdint.h>
@@ -51,7 +49,6 @@ static char VERSION[] = "XX.YY.ZZ";
 #include <stdarg.h>
 #include <getopt.h>
 
-
 #include "clk.h"
 #include "gpio.h"
 #include "dma.h"
@@ -60,19 +57,18 @@ static char VERSION[] = "XX.YY.ZZ";
 
 #include "ws2811.h"
 
-
 #define ARRAY_SIZE(stuff)       (sizeof(stuff) / sizeof(stuff[0]))
 
 // defaults for cmdline options
 #define TARGET_FREQ             WS2811_TARGET_FREQ
-#define GPIO_PIN                12
+#define GPIO_PIN                18
 #define DMA                     10
 //#define STRIP_TYPE            WS2811_STRIP_RGB		// WS2812/SK6812RGB integrated chip+leds
 #define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
 //#define STRIP_TYPE            SK6812_STRIP_RGBW		// SK6812RGBW (NOT SK6812RGB)
 
-#define WIDTH                   6
-#define HEIGHT                  4
+#define WIDTH                   3
+#define HEIGHT                  2
 #define LED_COUNT               (WIDTH * HEIGHT)
 
 int width = WIDTH;
@@ -109,7 +105,6 @@ ws2811_led_t *matrix;
 
 static uint8_t running = 1;
 int CTRL_C_FLAG=0;  // flag set if ctrl-c is detected
-
 
 void matrix_render(void)
 {
@@ -182,56 +177,53 @@ ws2811_led_t dotcolors_rgbw[] =
     0x10000020,  // blue + W
     0x00101010,  // white
     0x10101010,  // white + W
-
 };
-
-
 
 void matrix_setLed(int x, int y, unsigned char R, unsigned char G , unsigned char B)
 {
-      if(y >= HEIGHT) return;  // has to be smaller than the number of row
-      if(x  >= WIDTH) return; // has to be smaller than the number of column
+    if (y >= HEIGHT) return;  // has to be smaller than the number of row
+    if (x >= WIDTH) return; // has to be smaller than the number of column
 
-      int position = x + (y * WIDTH);
+    int position = x + (y * WIDTH);
 
-      unsigned long value = (unsigned long) B  << 16;
-      value |= (unsigned long) G  << 8;
-      value |= (unsigned long) R  ;
-      matrix[position]=value;
+    unsigned long value = (unsigned long) B  << 16;
+    value |= (unsigned long) G  << 8;
+    value |= (unsigned long) R  ;
+    matrix[position]=value;
 }
-
 
 void matrix_setRow(int y, unsigned char R, unsigned char G, unsigned char B)
 {
-    for(int x=0;x<WIDTH;x++)
-      matrix_setLed(x,y,R,G,B);
+    for (int x = 0; x < WIDTH; x++)
+    {
+        matrix_setLed(x, y, R, G, B);
+    }
 }
 
 void matrix_setColumn(int x, unsigned char R, unsigned char G, unsigned char B)
 {
     for(int y=0;y<HEIGHT;y++)
-      matrix_setLed(x,y,R,G,B);
+    {
+        matrix_setLed(x,y,R,G,B);
+    }
 }
-
 
 void matrix_setAll(unsigned char R, unsigned char G, unsigned char B)
 {
-      unsigned long value = (unsigned long) B  << 16;
-      value |= (unsigned long) G  << 8;
-      value |= (unsigned long) R  ;
-      for(int index=0;index<LED_COUNT;index++)
+    unsigned long value = (unsigned long) B  << 16;
+    value |= (unsigned long) G  << 8;
+    value |= (unsigned long) R  ;
+    for(int index=0;index<LED_COUNT;index++)
+    {
         matrix[index]=value;
+    }
 }
 
-
-
 void mysleep(float second)
-  {
-     if(CTRL_C_FLAG) return;  //ctrl-c detected just skip waiting
-     usleep((int)(1000000.0 * second));
-  }
-
-
+{
+    if (CTRL_C_FLAG) return;  //ctrl-c detected just skip waiting
+    usleep((int)(1000000.0 * second));
+}
 
 void matrix_bottom(void)
 {
@@ -245,21 +237,24 @@ void matrix_bottom(void)
             dotspos[i] = 0;
         }
 
-        if (ledstring.channel[0].strip_type == SK6812_STRIP_RGBW) {
+        if (ledstring.channel[0].strip_type == SK6812_STRIP_RGBW) 
+        {
             matrix[dotspos[i] + (height - 1) * width] = dotcolors_rgbw[i];
-        } else {
+        } 
+        else 
+        {
             matrix[dotspos[i] + (height - 1) * width] = dotcolors[i];
         }
     }
 }
+
 static void ctrl_c_handler(int signum)
 {
+    printf("ctrl_c_handler\n");
     CTRL_C_FLAG=1; //set ctrl-c flag
 	(void)(signum);
     running = 0;
 }
-
-
 
 static void setup_handlers(void)
 {
@@ -270,10 +265,7 @@ static void setup_handlers(void)
 
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
-
-
 }
-
 
 void parseargs(int argc, char **argv, ws2811_t *ws2811)
 {
@@ -296,12 +288,13 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 
 	while (1)
 	{
-
 		index = 0;
 		c = getopt_long(argc, argv, "cd:g:his:vx:y:", longopts, &index);
 
 		if (c == -1)
+        {
 			break;
+        }
 
 		switch (c)
 		{
@@ -360,9 +353,12 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 		case 'd':
 			if (optarg) {
 				int dma = atoi(optarg);
-				if (dma < 14) {
+				if (dma < 14) 
+                {
 					ws2811->dmanum = dma;
-				} else {
+				} 
+                else 
+                {
 					printf ("invalid dma %d\n", dma);
 					exit (-1);
 				}
@@ -370,11 +366,15 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 			break;
 
 		case 'y':
-			if (optarg) {
+			if (optarg) 
+            {
 				height = atoi(optarg);
-				if (height > 0) {
+				if (height > 0) 
+                {
 					ws2811->channel[0].count = height * width;
-				} else {
+				} 
+                else 
+                {
 					printf ("invalid height %d\n", height);
 					exit (-1);
 				}
@@ -382,11 +382,15 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 			break;
 
 		case 'x':
-			if (optarg) {
+			if (optarg) 
+            {
 				width = atoi(optarg);
-				if (width > 0) {
+				if (width > 0) 
+                {
 					ws2811->channel[0].count = height * width;
-				} else {
+				} 
+                else 
+                {
 					printf ("invalid width %d\n", width);
 					exit (-1);
 				}
@@ -394,7 +398,8 @@ void parseargs(int argc, char **argv, ws2811_t *ws2811)
 			break;
 
 		case 's':
-			if (optarg) {
+			if (optarg) 
+            {
 				if (!strncasecmp("rgb", optarg, 4)) {
 					ws2811->channel[0].strip_type = WS2811_STRIP_RGB;
 				}
@@ -451,67 +456,64 @@ int main(int argc, char *argv[])
 
     matrix = malloc(sizeof(ws2811_led_t) * width * height);
 
-
-
+    printf("Setup Handlers\n");
     setup_handlers();
 
+    printf("Initializing...\n");
     if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS)
     {
         fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(ret));
         return ret;
     }
 
-int col=0;
-int row=0;
-unsigned char table[7][3]={{0x20,0,0},{0,0x20,0},{0,0,0x20},
-                            {0x20,0x20,0},{0x20,0,0x20},{0,0x20,0x20},{0x20,0x20,0x20}};
-int ci=0;
+    int col=0;
+    int row=0;
+    unsigned char table[7][3]={{0x20,0,0},{0,0x20,0},{0,0,0x20},
+                                {0x20,0x20,0},{0x20,0,0x20},{0,0x20,0x20},{0x20,0x20,0x20}};
+    int ci=0;
 
+    printf("Starting loop\n");
     while (running)
     {
 //        matrix_raise();
 //        matrix_bottom();
 
-
-
-     // Set All Led to RED
-
-       matrix_setAll(30,0,0);
-       matrix_render();
-       mysleep(1.0);
-
-     // Set Row to GREEN  in Alternance
-      for(row=0;row<WIDTH;row++)
-      {
-        matrix_setAll(0,0,0);
-        matrix_setRow(row,0,30,0);
+        // Set All Led to RED
+        matrix_setAll(30, 0, 0);
         matrix_render();
         mysleep(1.0);
-      }
 
+        // Set Row to GREEN  in Alternance
+        for (row = 0; row < WIDTH; row++)
+        {
+            matrix_setAll(0, 0, 0);
+            matrix_setRow(row, 0, 30, 0);
+            matrix_render();
+            mysleep(1.0);
+        }
 
-     // Set Column to BLUE In Alternance
-      for(col=0;col<WIDTH;col++)
-      {
-        matrix_setAll(0,0,0);
-        matrix_setColumn(col,0,0,30);
-        matrix_render();
-        mysleep(1.0);
-      }
-
-
+        // Set Column to BLUE In Alternance
+        for(col = 0; col < WIDTH; col++)
+        {
+            matrix_setAll(0, 0, 0);
+            matrix_setColumn(col, 0, 0, 30);
+            matrix_render();
+            mysleep(1.0);
+        }
 
         // 15 frames /sec
-//        usleep(1000000 / (10*19));
+        // usleep(1000000 / (10*19));
     }
 
-    if (clear_on_exit) {
-	matrix_clear();
-	matrix_render();
+    if (clear_on_exit) 
+    {
+        matrix_clear();
+        matrix_render();
     }
 
+    printf("Cleaning uo\n");
     ws2811_fini(&ledstring);
 
-    printf ("\n");
+    printf("\n");
     return ret;
 }
