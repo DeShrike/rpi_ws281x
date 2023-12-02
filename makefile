@@ -48,4 +48,4 @@ ws2811.o: ws2811.c $(HEADERS)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
 clean:
-	rm -f *.o test1 test2 test3
+	rm -f -v *.o test1 test2 test3
