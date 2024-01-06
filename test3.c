@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (clear_on_exit) 
+    if (clear_on_exit)
     {
         strip_clear();
         strip_render();

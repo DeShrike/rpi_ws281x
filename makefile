@@ -1,9 +1,20 @@
 CC=gcc
-HEADERS=clk.h dma.h gpio.h mailbox.h pcm.h pwm.h rpihw.h version.h ws2811.h
-OBJS=mailbox.o pcm.o pwm.o rpihw.o dma.o ws2811.o
+HEADERS=clk.h dma.h gpio.h mailbox.h pcm.h pwm.h rpihw.h version.h ws2811.h neopixel.h
+OBJS=mailbox.o pcm.o pwm.o rpihw.o dma.o ws2811.o neopixel.o
 CFLAGS=-O0
 
-all: test1 test2 test3
+all: retro test2
+# all: test1 test2 test3
+
+####################
+
+retro: retro.o $(OBJS)
+	$(CC) $+ -o $@
+
+retro.o: retro.c $(HEADERS)
+	$(CC) -c $< -o $@  $(CFLAGS)
+
+####################
 
 test1: test1.o $(OBJS)
 	$(CC) $+ -o test1
@@ -47,5 +58,11 @@ rpihw.o: rpihw.c rpihw.h
 ws2811.o: ws2811.c $(HEADERS)
 	$(CC) -c $< -o $@ $(CFLAGS)
 
+####################
+
+
+
+####################
+
 clean:
-	rm -f -v *.o test1 test2 test3
+	rm -f -v *.o test1 test2 test3 retro
