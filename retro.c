@@ -7,7 +7,7 @@
 
 #define GPIO_PIN                18
 #define LED_COUNT               30
-#define PATTERN_DURATION        10
+#define PATTERN_DURATION        15
 
 typedef void pattern_func(void);
 
@@ -585,6 +585,136 @@ void pattern15(void)
     }
 }
 
+void pattern16(void)
+{
+    start();
+    int x = 0;
+    int dx = 10;
+    int i = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        if (i == 0)
+            strip_fill_rgb(x, 0, 0);
+        else if (i == 1)
+            strip_fill_rgb(0, x, 0);
+        else
+            strip_fill_rgb(0, 0, x);
+        strip_render();
+
+        SLEEP(0.05);
+        x = x + dx;
+        if (x <= 0)
+        {
+            x = 20;
+            dx = -dx;
+            i = (i + 1) % 3;
+        }
+
+        if (x >= 140)
+        {
+            x = 120;
+            dx = -dx;
+        }
+
+        tick();
+    }
+}
+
+void pattern17(void)
+{
+    start();
+    int ix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set_rgb((ix + 0) % LED_COUNT, 0, 0, 20);
+        strip_set_rgb((ix + 1) % LED_COUNT, 40, 0, 0);
+        strip_set_rgb((ix + 2) % LED_COUNT, 60, 0, 0);
+        strip_set_rgb((ix + 3) % LED_COUNT, 80, 0, 0);
+        strip_set_rgb((ix + 4) % LED_COUNT, 100, 0, 0);
+        strip_set_rgb((ix + 5) % LED_COUNT, 120, 0, 0);
+        strip_set_rgb((ix + 6) % LED_COUNT, 0, 140, 0);
+        strip_render();
+        SLEEP(0.1);
+        ix++;
+
+        tick();
+    }
+}
+
+void pattern18(void)
+{
+    start();
+    float d = 0.01f;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix1 = (float)rand() / RAND_MAX * colors_count;
+    int cix2 = (float)rand() / RAND_MAX * colors_count;
+    int cix3 = (float)rand() / RAND_MAX * colors_count;
+    int cix4 = (float)rand() / RAND_MAX * colors_count;
+
+    SLEEP(1);
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        fill_top(colors[cix1]);
+        fill_right(colors[cix2]);
+        fill_bottom(colors[cix3]);
+        fill_left(colors[cix4]);
+        strip_render();
+        SLEEP(d);
+
+        strip_clear();
+        strip_render();
+        SLEEP(d);
+
+        d += 0.005f;
+        if (d > 0.20f)
+        {
+            break;
+        }
+
+        tick();
+    }
+
+    SLEEP(1);
+}
+
+void pattern19(void)
+{
+    start();
+    int i = 0;
+    int m = LED_COUNT - 1;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+
+    SLEEP(1);
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set(i, colors[cix]);
+
+        for (int j = m; j <= LED_COUNT; i++)
+        {
+            strip_set(j, colors[cix]);
+        }
+
+        strip_render();
+        SLEEP(0.1);
+
+        i = i + 1;
+        if (i == m)
+        {
+            i = 0;
+            m -= 1;
+            if (m < 0)
+            {
+                break;
+            }
+        }
+
+        tick();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -596,10 +726,11 @@ int main(void)
     }
 
     int pattern = 0;
-    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
-                                 pattern6, pattern7, pattern8, pattern9, pattern10,
-                                 pattern11, pattern12, pattern13, pattern14, pattern15 };
-    //pattern_func *patterns[] = { pattern15 };
+    //pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
+    //                             pattern6, pattern7, pattern8, pattern9, pattern10,
+    //                             pattern11, pattern12, pattern13, pattern14, pattern15,
+    //                             pattern16, pattern17, pattern18, pattern19 };
+    pattern_func *patterns[] = { pattern19 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
