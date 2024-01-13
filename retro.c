@@ -8,6 +8,7 @@
 #define GPIO_PIN                18
 #define LED_COUNT               30
 #define PATTERN_DURATION        15
+#define REV(x)                  (LED_COUNT - (x) - 1)
 
 typedef void pattern_func(void);
 
@@ -682,34 +683,125 @@ void pattern19(void)
 {
     start();
     int i = 0;
-    int m = LED_COUNT - 1;
+    int m = LED_COUNT;
     int colors_count = sizeof(colors) / sizeof(colors[0]);
     int cix = (float)rand() / RAND_MAX * colors_count;
 
-    SLEEP(1);
+    SLEEP(0.5);
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
-        strip_set(i, colors[cix]);
+        strip_set(REV(i), colors[cix]);
 
-        for (int j = m; j <= LED_COUNT; i++)
+        for (int j = m; j <= LED_COUNT; j++)
         {
-            strip_set(j, colors[cix]);
+            strip_set(REV(j), colors[cix]);
         }
 
         strip_render();
-        SLEEP(0.1);
+        SLEEP(0.02);
 
         i = i + 1;
         if (i == m)
         {
             i = 0;
             m -= 1;
-            if (m < 0)
+            if (m <= 0)
             {
                 break;
             }
         }
+
+        tick();
+    }
+
+    SLEEP(0.5);
+    strip_clear();
+    strip_render();
+    SLEEP(0.5);
+}
+
+void pattern20(void)
+{
+    #define STAR_COUNT 7
+
+    struct star {
+        int pos;
+        int rgb;
+        float b;
+        float deltab;
+    };
+
+    void makestar(struct star *star, bool r)
+    {
+        star->deltab = 0.05f;
+        star->rgb = (float)rand() / RAND_MAX * 4;
+        star->pos = (float)rand() / RAND_MAX * LED_COUNT;
+        if (r)
+        {
+            star->b = ((float)rand() / RAND_MAX) / 2.0f;
+        }
+        else
+        {
+            star->b = 0.0f;
+        }
+    }
+
+    void updatestar(struct star *star)
+    {
+        star->b += star->deltab;
+        if (star->b > 1.0f)
+        {
+            star->b = 1.0f;
+            star->deltab *= -1;
+        }
+
+        if (star->b < 0.0f)
+        {
+            makestar(star, false);
+        }
+    }
+
+    void drawstar(struct star *star)
+    {
+            int c = star->b * 128;
+            if (star->rgb == 0)
+            {
+                strip_set_rgb(star->pos, c, 0, 0);
+            }
+            else if (star->rgb == 1)
+            {
+                strip_set_rgb(star->pos, 0, c, 0);
+            }
+            else if (star->rgb == 2)
+            {
+                strip_set_rgb(star->pos, 0, 0, c);
+            }
+            else
+            {
+                strip_set_rgb(star->pos, c, c, 0);
+            }
+    }
+
+    start();
+
+    struct star stars[STAR_COUNT];
+    for (int i = 0; i < STAR_COUNT; ++i)
+    {
+        makestar(&stars[i], true);
+    }
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        strip_clear();
+        for (int i = 0; i < STAR_COUNT; i++)
+        {
+            drawstar(&stars[i]);
+            updatestar(&stars[i]);
+        }
+
+        strip_render();
+        SLEEP(0.1);
 
         tick();
     }
@@ -726,11 +818,11 @@ int main(void)
     }
 
     int pattern = 0;
-    //pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
-    //                             pattern6, pattern7, pattern8, pattern9, pattern10,
-    //                             pattern11, pattern12, pattern13, pattern14, pattern15,
-    //                             pattern16, pattern17, pattern18, pattern19 };
-    pattern_func *patterns[] = { pattern19 };
+    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
+                                 pattern6, pattern7, pattern8, pattern9, pattern10,
+                                 pattern11, pattern12, pattern13, pattern14, pattern15,
+                                 pattern16, pattern17, pattern18, pattern19, pattern20 };
+    //pattern_func *patterns[] = { pattern20 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
