@@ -32,7 +32,7 @@ static ws2811_t ledstring =
             .gpionum = 0,    // GPIO_PIN,
             .count = 0,      // LED_COUNT,
             .invert = 0,
-            .brightness = 127,
+            .brightness = 64,
             .strip_type = STRIP_TYPE,
         },
         [1] =

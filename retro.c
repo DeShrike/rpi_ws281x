@@ -2,7 +2,7 @@
 #include "neopixel.h"
 
 #define GPIO_PIN                18
-#define LED_COUNT               7
+#define LED_COUNT               30
 
 uint32_t colors[] =
 {
@@ -19,24 +19,25 @@ uint32_t colors[] =
 
 /*
 
-Strip layout: 
+Strip layout:
 
- 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17
-41                                                   18
-40                                                   19
-39                                                   20
- 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21
+ 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
+39                                                 17
+38                                                 18
+37                                                 19
+ 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20
 
 */
 
-unsigned int top[18] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17 };
-unsigned int bottom[18] = { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38 };
-unsigned int left[3] = { 18, 19, 20 };
-unsigned int right[3] = { 39, 40, 41 };
+unsigned int top[18] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+unsigned int bottom[18] = { 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36 };
+unsigned int left[3] = { 17, 18, 19 };
+unsigned int right[3] = { 37, 38, 39 };
 
 int main(void)
 {
     printf("Initializing...\n");
+    printf("PIN: %d  LEDS: %d\n", GPIO_PIN, LED_COUNT);
     if (!neo_init(GPIO_PIN, LED_COUNT))
     {
         return 1;
@@ -56,7 +57,7 @@ int main(void)
         ix = (ix + 1) % ARRAY_SIZE(colors);
     }
 
-    printf("Cleaning up\n");
+    printf("\nCleaning up\n");
     neo_deinit();
 
     return 0;

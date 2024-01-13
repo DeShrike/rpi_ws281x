@@ -6,7 +6,7 @@
 #include "neopixel.h"
 
 #define GPIO_PIN                18
-#define LED_COUNT               7
+#define LED_COUNT               30
 
 int dotspos[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
 ws2811_led_t dotcolors[] =
@@ -23,11 +23,15 @@ ws2811_led_t dotcolors[] =
 
 int main(int argc, char *argv[])
 {
+    printf("Initializing\n");
+    printf("Pin: %d\n", GPIO_PIN);
+    printf("LED Count: %d\n", LED_COUNT);
+
     if (!neo_init(GPIO_PIN, LED_COUNT))
     {
         return 1;
     }
-    
+
     while (!neo_loop_stop())
     {
         // Fill to RED
@@ -46,6 +50,7 @@ int main(int argc, char *argv[])
         neo_sleep(0.20);
     }
 
+    printf("\nCleanup\n");
     neo_deinit();
 
     return 0;
