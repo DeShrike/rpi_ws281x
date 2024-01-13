@@ -476,6 +476,115 @@ void pattern12(void)
     }
 }
 
+void pattern13(void)
+{
+    start();
+    int x0 = 0;
+    int dx = 1;
+    int x1 = 0;
+    int x2 = 0;
+    int x3 = 0;
+    int x4 = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set_rgb(top[x4], 5, 0, 0);
+        strip_set_rgb(bottom[x4], 5, 0, 0);
+
+        strip_set_rgb(top[x3], 30, 0, 0);
+        strip_set_rgb(bottom[x3], 30, 0, 0);
+
+        strip_set_rgb(top[x2], 80, 0, 0);
+        strip_set_rgb(bottom[x2], 80, 0, 0);
+
+        strip_set_rgb(top[x1], 100, 0, 0);
+        strip_set_rgb(bottom[x1], 100, 0, 0);
+
+        strip_set_rgb(top[x0], 128, 0, 0);
+        strip_set_rgb(bottom[x0], 128, 0, 0);
+
+        strip_render();
+        SLEEP(0.1);
+
+        x4 = x3;
+        x3 = x2;
+        x2 = x1;
+        x1 = x0;
+
+        x0 = x0 + dx;
+        if (x0 < 0)
+        {
+            x0 = 1;
+            dx = -dx;
+        }
+
+        if (x0 >= HORI)
+        {
+            x0 = HORI - 2;
+            dx = -dx;
+        }
+
+        tick();
+    }
+}
+
+void pattern14(void)
+{
+    start();
+    int x = 0;
+    int cix = 0;
+    strip_clear();
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_set(top[x], colors[cix]);
+        strip_set(bottom[x], colors[cix]);
+        strip_render();
+
+        SLEEP(0.1);
+        x++;
+        if (x >= HORI)
+        {
+            x = 0;
+            cix = (cix + 1) % ARRAY_SIZE(colors);
+        }
+
+        tick();
+    }
+}
+
+void pattern15(void)
+{
+    start();
+    int x = 0;
+    int dx = 1;
+    int cix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set(top[x], colors[cix]);
+        strip_set(bottom[HORI - x - 1], colors[cix]);
+        strip_render();
+
+        SLEEP(0.05);
+        x = x + dx;
+        if (x <= 0)
+        {
+            x = 1;
+            dx = -dx;
+            cix = (cix + 1) % ARRAY_SIZE(colors);
+        }
+
+        if (x >= HORI)
+        {
+            x = HORI - 2;
+            dx = -dx;
+            cix = (cix + 1) % ARRAY_SIZE(colors);
+        }
+
+        tick();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -489,8 +598,8 @@ int main(void)
     int pattern = 0;
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
-                                 pattern11, pattern12 };
-    // pattern_func *patterns[] = { pattern12 };
+                                 pattern11, pattern12, pattern13, pattern14, pattern15 };
+    //pattern_func *patterns[] = { pattern15 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
