@@ -1,12 +1,13 @@
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <time.h>
 #include "neopixel.h"
 
 #define GPIO_PIN                18
 #define LED_COUNT               30
 #define PATTERN_DURATION        10
-#define DURATION                (((double)(current - start)) / CLOCKS_PER_SEC) * 100
 
 typedef void pattern_func(void);
 
@@ -23,7 +24,18 @@ uint32_t colors[] =
     0x00202020,  // white
 };
 
-clock_t start, current;
+#define DURATION (current - starttime)
+time_t starttime, current;
+
+void start(void)
+{
+    time(&starttime);
+}
+
+void tick(void)
+{
+    time(&current);
+}
 
 #if 0
 
@@ -126,7 +138,7 @@ void sleep_ms(int milliseconds)
 
 void pattern1(void)
 {
-    start = clock();
+    start();
     int ix = 0;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
@@ -139,13 +151,13 @@ void pattern1(void)
         SLEEP(0.10);
 
         ix = (ix + 1) % ARRAY_SIZE(colors);
-        current = clock();
+        tick();
     }
 }
 
 void pattern2(void)
 {
-    start = clock();
+    start();
     int ixr = 0;
     int ixg = LED_COUNT / 4;
     int ixb = LED_COUNT / 4 * 2;
@@ -166,13 +178,14 @@ void pattern2(void)
         ixb = (ixb + 1) % LED_COUNT;
         ixy = (ixy - 1);
         if (ixy < 0) ixy = LED_COUNT - 1;
-        current = clock();
+
+        tick();
     }
 }
 
 void pattern3(void)
 {
-    start = clock();
+    start();
     int x = 0;
     int dx = 1;
     int cix = 0;
@@ -199,24 +212,25 @@ void pattern3(void)
         x = x + dx;
         if (x < 0)
         {
-            x = 0;
+            x = 1;
             dx = -dx;
         }
 
         if (x >= WIDTH)
         {
-            x = WIDTH - 1;
+            x = WIDTH - 2;
             dx = -dx;
         }
 
         cix = (cix + 1) % ARRAY_SIZE(colors);
-        current = clock();
+
+        tick();
     }
 }
 
 void pattern4(void)
 {
-    start = clock();
+    start();
     int cix = 0;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
@@ -234,13 +248,13 @@ void pattern4(void)
         strip_render();
         SLEEP(0.2);
 
-        current = clock();
+        tick();
     }
 }
 
 void pattern5(void)
 {
-    start = clock();
+    start();
     int cix = 0;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
@@ -256,13 +270,13 @@ void pattern5(void)
         strip_render();
         SLEEP(0.2);
 
-        current = clock();
+        tick();
     }
 }
 
 void pattern6(void)
 {
-    start = clock();
+    start();
     int cix = 0;
     int ix = 0;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
@@ -295,13 +309,13 @@ void pattern6(void)
 
         SLEEP(0.15);
 
-        current = clock();
+        tick();
     }
 }
 
 void pattern7(void)
 {
-    start = clock();
+    start();
     int cix = 0;
     int ix = 0;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
@@ -320,13 +334,13 @@ void pattern7(void)
 
         cix = (cix + 1) % ARRAY_SIZE(colors);
 
-        current = clock();
+        tick();
     }
 }
 
 void pattern8(void)
 {
-    start = clock();
+    start();
     int ix = 0;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
@@ -340,13 +354,14 @@ void pattern8(void)
         strip_render();
         SLEEP(0.05);
         ix++;
-        current = clock();
+
+        tick();
     }
 }
 
 void pattern9(void)
 {
-    start = clock();
+    start();
     int x = 1;
     int dx = 1;
     int cix = 0;
@@ -374,7 +389,90 @@ void pattern9(void)
             cix = (cix + 1) % ARRAY_SIZE(colors);
         }
 
-        current = clock();
+        tick();
+    }
+}
+
+void pattern10(void)
+{
+    start();
+    int x = 0;
+    float ar = 0;
+    float ag = M_PI;
+    float ab = M_PI / 2.0f;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        int r = ((int)((sin(ar) + 1.0) * 128.0)) % 256;
+        int g = ((int)((sin(ag) + 1.0) * 128.0)) % 256;
+        int b = ((int)((sin(ab) + 1.0) * 128.0)) % 256;
+        strip_set_rgb(x, r / 2, g / 2, b / 2);
+        strip_render();
+
+        SLEEP(0.05);
+
+        ar += 0.1f;
+        ag += 0.1f;
+        ab += 0.1f;
+        x = (x + 1) % LED_COUNT;
+
+        tick();
+    }
+}
+
+void pattern11(void)
+{
+    start();
+    int ix = 0;
+    int j = 0;
+    int rgb1[] = { 0x00200000, 0x00002000, 0x00000020 };
+    int rgb2[] = { 0x00202000, 0x00002020, 0x00200020 };
+    int rgb_count = sizeof(rgb1) / sizeof(rgb1[0]);
+    assert(sizeof(rgb1) == sizeof(rgb2));
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        for (int i = 0; i < LED_COUNT; ++i)
+        {
+            if (j % 2 == 0)
+                strip_set(i, rgb1[ix]);
+            else
+                strip_set(i, rgb2[ix]);
+            ix = (ix + 1) % rgb_count;
+        }
+
+        ix++;
+        j++;
+        strip_render();
+        SLEEP(0.25);
+
+        tick();
+    }
+}
+
+void pattern12(void)
+{
+    start();
+    int i = 0;
+    int cix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        i = ((float)rand() / RAND_MAX) * 4;
+        strip_clear();
+        if (i == 0)
+            fill_left(colors[cix]);
+        else if (i == 1)
+            fill_right(colors[cix]);
+        else if (i == 2)
+            fill_top(colors[cix]);
+        else if (i == 3)
+            fill_bottom(colors[cix]);
+
+        strip_render();
+        SLEEP(0.15);
+
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+
+        tick();
     }
 }
 
@@ -389,18 +487,18 @@ int main(void)
     }
 
     int pattern = 0;
-    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4,
-                                 pattern5, pattern6, pattern7, pattern8, pattern9 };
-    // pattern_func *patterns[] = { pattern9 };
+    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
+                                 pattern6, pattern7, pattern8, pattern9, pattern10,
+                                 pattern11, pattern12 };
+    // pattern_func *patterns[] = { pattern12 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
-    start = clock();
-    current = clock();
-
+    start();
+    tick();
     while (!neo_loop_stop())
     {
-        printf("Pattern %d\r", pattern + 1);
+        printf("Pattern %d ", pattern + 1);
         fflush(stdout);
         (patterns[pattern])();
         pattern = (pattern + 1) % pattern_count;
