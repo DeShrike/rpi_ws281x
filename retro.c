@@ -41,8 +41,8 @@ Strip layout:
 
 unsigned int top[18] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 unsigned int bottom[18] = { 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20 };
-unsigned int left[3] = { 17, 18, 19 };
-unsigned int right[3] = { 37, 38, 39 };
+unsigned int right[3] = { 17, 18, 19 };
+unsigned int left[3] = { 37, 38, 39 };
 
 #else
 
@@ -60,8 +60,8 @@ Strip layout:
 
 unsigned int top[12] =    {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11 };
 unsigned int bottom[12] = { 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15 };
-unsigned int left[3] =  { 12, 13, 14 };
-unsigned int right[3] = { 27, 28, 29 };
+unsigned int right[3] =  { 12, 13, 14 };
+unsigned int left[3] = { 27, 28, 29 };
 
 #endif
 
@@ -293,7 +293,33 @@ void pattern6(void)
         cix = (cix + 1) % ARRAY_SIZE(colors);
         ix = (ix + 1) % 4;
 
-        SLEEP(0.1);
+        SLEEP(0.15);
+
+        current = clock();
+    }
+}
+
+void pattern7(void)
+{
+    start = clock();
+    int cix = 0;
+    int ix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        fill_top(colors[cix]);
+        fill_bottom(colors[cix]);
+        strip_render();
+        SLEEP(0.15);
+
+        strip_clear();
+        fill_right(colors[cix]);
+        fill_left(colors[cix]);
+        strip_render();
+        SLEEP(0.15);
+
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+
 
         current = clock();
     }
@@ -310,8 +336,8 @@ int main(void)
     }
 
     int pattern = 0;
-    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,pattern6 };
-    // pattern_func *patterns[] = { pattern6 };
+    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5, pattern6, pattern7 };
+    //pattern_func *patterns[] = { pattern7 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
