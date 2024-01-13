@@ -830,7 +830,7 @@ int main(void)
     tick();
     while (!neo_loop_stop())
     {
-        printf("Pattern %d ", pattern + 1);
+        printf("\rPattern %d ", pattern + 1);
         fflush(stdout);
         (patterns[pattern])();
         pattern = (pattern + 1) % pattern_count;

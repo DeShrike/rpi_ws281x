@@ -1,7 +1,7 @@
 CC=gcc
 HEADERS=clk.h dma.h gpio.h mailbox.h pcm.h pwm.h rpihw.h version.h ws2811.h neopixel.h
 OBJS=mailbox.o pcm.o pwm.o rpihw.o dma.o ws2811.o neopixel.o
-CFLAGS=-O0
+CFLAGS=-O3
 
 all: retro
 # all: test1 test2 test3
