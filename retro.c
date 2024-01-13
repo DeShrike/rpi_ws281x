@@ -320,6 +320,59 @@ void pattern7(void)
 
         cix = (cix + 1) % ARRAY_SIZE(colors);
 
+        current = clock();
+    }
+}
+
+void pattern8(void)
+{
+    start = clock();
+    int ix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set_rgb((ix + 0) % LED_COUNT, 128, 0, 0);
+        strip_set_rgb((ix + 1) % LED_COUNT, 0, 128, 0);
+        strip_set_rgb((ix + 2) % LED_COUNT, 0, 0, 128);
+        strip_set_rgb((ix + 3) % LED_COUNT, 128, 128, 0);
+        strip_set_rgb((ix + 4) % LED_COUNT, 128, 0, 128);
+        strip_set_rgb((ix + 5) % LED_COUNT, 0, 128, 128);
+        strip_render();
+        SLEEP(0.05);
+        ix++;
+        current = clock();
+    }
+}
+
+void pattern9(void)
+{
+    start = clock();
+    int x = 1;
+    int dx = 1;
+    int cix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set(top[x - 1], colors[cix]);
+        strip_set(bottom[x - 1], colors[cix]);
+        strip_render();
+
+        SLEEP(0.1);
+
+        x = x + dx;
+        if (x == 0)
+        {
+            x = 2;
+            dx = -dx;
+            cix = (cix + 1) % ARRAY_SIZE(colors);
+        }
+
+        if (x >= WIDTH - 2)
+        {
+            x = WIDTH - 3;
+            dx = -dx;
+            cix = (cix + 1) % ARRAY_SIZE(colors);
+        }
 
         current = clock();
     }
@@ -329,15 +382,16 @@ int main(void)
 {
     srand(time(NULL));
     printf("Initializing...\n");
-    printf("PIN: %d  LEDS: %d\n", GPIO_PIN, LED_COUNT);
+    printf("Pin: %d  Leds: %d\n", GPIO_PIN, LED_COUNT);
     if (!neo_init(GPIO_PIN, LED_COUNT))
     {
         return 1;
     }
 
     int pattern = 0;
-    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5, pattern6, pattern7 };
-    //pattern_func *patterns[] = { pattern7 };
+    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4,
+                                 pattern5, pattern6, pattern7, pattern8, pattern9 };
+    // pattern_func *patterns[] = { pattern9 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
