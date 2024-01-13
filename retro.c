@@ -58,9 +58,9 @@ Strip layout:
 
 */
 
-unsigned int top[12] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
+unsigned int top[12] =    {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11 };
 unsigned int bottom[12] = { 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15 };
-unsigned int left[3] = { 12, 13, 14 };
+unsigned int left[3] =  { 12, 13, 14 };
 unsigned int right[3] = { 27, 28, 29 };
 
 #endif
@@ -85,6 +85,22 @@ void fill_right(uint32_t color)
     for (int i = 0; i < VERT; i++)
     {
         strip_set(right[i], color);
+    }
+}
+
+void fill_top(uint32_t color)
+{
+    for (int i = 0; i < HORI; i++)
+    {
+        strip_set(top[i], color);
+    }
+}
+
+void fill_bottom(uint32_t color)
+{
+    for (int i = 0; i < HORI; i++)
+    {
+        strip_set(bottom[i], color);
     }
 }
 
@@ -222,6 +238,67 @@ void pattern4(void)
     }
 }
 
+void pattern5(void)
+{
+    start = clock();
+    int cix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        fill_top(colors[cix]);
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+        fill_right(colors[cix]);
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+        fill_bottom(colors[cix]);
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+        fill_left(colors[cix]);
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+
+        strip_render();
+        SLEEP(0.2);
+
+        current = clock();
+    }
+}
+
+void pattern6(void)
+{
+    start = clock();
+    int cix = 0;
+    int ix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        if (ix == 0)
+        {
+            fill_top(colors[cix]);
+        }
+
+        if (ix == 1)
+        {
+            fill_right(colors[cix]);
+        }
+
+        if (ix == 2)
+        {
+            fill_bottom(colors[cix]);
+        }
+
+        if (ix == 3)
+        {
+            fill_left(colors[cix]);
+        }
+
+        strip_render();
+
+        cix = (cix + 1) % ARRAY_SIZE(colors);
+        ix = (ix + 1) % 4;
+
+        SLEEP(0.1);
+
+        current = clock();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -233,8 +310,8 @@ int main(void)
     }
 
     int pattern = 0;
-    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4 };
-    //pattern_func *patterns[] = { pattern4 };
+    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,pattern6 };
+    // pattern_func *patterns[] = { pattern6 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
