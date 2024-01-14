@@ -80,10 +80,11 @@ unsigned int left[3] = { 27, 28, 29 };
 
 //#define SLEEP sleep_ms
 #define SLEEP neo_sleep
-#define HORI (sizeof(top) / sizeof(int))
-#define VERT (sizeof(left) / sizeof(int))
-#define WIDTH (HORI + 2)
-#define HEIHT (VERT + 2)
+
+#define HORI   (sizeof(top) / sizeof(int))
+#define VERT   (sizeof(left) / sizeof(int))
+#define WIDTH  (HORI + 2)
+#define HEIGHT (VERT + 2)
 
 void fill_left(uint32_t color)
 {
@@ -914,9 +915,102 @@ void pattern22(void)
     SLEEP(0.5);
 }
 
+void pattern23(void)
+{
+    start();
+
+    SLEEP(0.5);
+    strip_clear();
+
+    strip_set_rgb(left[0], 128, 0, 0);
+    strip_set_rgb(left[1], 0, 128, 0);
+    strip_set_rgb(left[2], 0, 0, 128);
+
+    strip_set_rgb(right[0], 128, 0, 0);
+    strip_set_rgb(right[1], 0, 128, 0);
+    strip_set_rgb(right[2], 0, 0, 128);
+
+    int state = 0;
+    int shifts = 0;
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        if (state == 0)
+        {
+            strip_render();
+            state = 1;
+            shifts = HORI + VERT;
+            SLEEP(0.25);
+        }
+        else if (state == 1)
+        {
+            strip_shift_up();
+            strip_render();
+            SLEEP(0.025);
+            shifts--;
+            if (shifts == 0)
+            {
+                state = 2;
+            }
+        }
+        else if (state == 2)
+        {
+            SLEEP(0.25);
+            shifts = HORI + VERT;
+            state = 3;
+        }
+        else if (state == 3)
+        {
+            strip_shift_up();
+            strip_render();
+            SLEEP(0.025);
+            shifts--;
+            if (shifts == 0)
+            {
+                state = 0;
+            }
+        }
+
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
+void pattern24(void)
+{
+    start();
+    int ix = 0;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set(top[ix], colors[cix]);
+        strip_render();
+        SLEEP(0.05);
+
+        strip_clear();
+        strip_set(bottom[ix], colors[cix]);
+        strip_render();
+        SLEEP(0.05);
+
+        ix++;
+        if (ix >= HORI)
+        {
+            cix = (float)rand() / RAND_MAX * colors_count;
+            ix = 0;
+        }
+
+        tick();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
+
     printf("Initializing...\n");
     printf("Pin: %d  Leds: %d\n", GPIO_PIN, LED_COUNT);
     if (!neo_init(GPIO_PIN, LED_COUNT))
@@ -926,14 +1020,24 @@ int main(void)
 
     int pattern = 0;
 
+    // pattern_func *patterns[] = { pattern24 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
-                                 pattern21, pattern22 };
-
-    // pattern_func *patterns[] = { pattern22 };
+                                 pattern21, pattern22, pattern23, pattern24 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
+
+    // Shuffle the patterns
+    for (int i = 0; i < 1000; ++i)
+    {
+        int a = rand() % pattern_count;
+        int b = rand() % pattern_count;
+        pattern_func *temp = patterns[a];
+        patterns[a] = patterns[b];
+        patterns[b] = temp;
+    }
+
     printf("%d patterns\n", pattern_count);
 
     start();
