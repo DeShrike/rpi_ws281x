@@ -23,6 +23,8 @@ void strip_set_rgb(unsigned int index, unsigned char R, unsigned char G, unsigne
 void strip_fill_rgb(unsigned char R, unsigned char G, unsigned char B);
 void strip_set(unsigned int index, uint32_t color);
 void strip_fill(uint32_t color);
+void strip_shift_up();
+void strip_shift_down();
 
 void neo_sleep(float second);
 

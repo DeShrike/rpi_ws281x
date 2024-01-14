@@ -104,6 +104,28 @@ void strip_fill(uint32_t color)
     }
 }
 
+void strip_shift_up()
+{
+    ws2811_led_t temp = strip[led_count - 1];
+    for (int i = led_count - 2; i >= 0; i--)
+    {
+        strip[i + 1] = strip[i];
+    }
+
+    strip[0] = temp;
+}
+
+void strip_shift_down()
+{
+    ws2811_led_t temp = strip[0];
+    for (int i = 1; i < led_count; i++)
+    {
+        strip[i - 1] = strip[i];
+    }
+
+    strip[led_count - 1] = temp;
+}
+
 void neo_sleep(float second)
 {
     if (CTRL_C_FLAG) return;  //ctrl-c detected just skip waiting

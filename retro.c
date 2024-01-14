@@ -247,7 +247,7 @@ void pattern4(void)
         }
 
         strip_render();
-        SLEEP(0.2);
+        SLEEP(0.15);
 
         tick();
     }
@@ -734,7 +734,7 @@ void pattern20(void)
 
     void makestar(struct star *star, bool r)
     {
-        star->deltab = 0.05f;
+        star->deltab = 0.075f;
         star->rgb = (float)rand() / RAND_MAX * 4;
         star->pos = (float)rand() / RAND_MAX * LED_COUNT;
         if (r)
@@ -764,23 +764,23 @@ void pattern20(void)
 
     void drawstar(struct star *star)
     {
-            int c = star->b * 128;
-            if (star->rgb == 0)
-            {
-                strip_set_rgb(star->pos, c, 0, 0);
-            }
-            else if (star->rgb == 1)
-            {
-                strip_set_rgb(star->pos, 0, c, 0);
-            }
-            else if (star->rgb == 2)
-            {
-                strip_set_rgb(star->pos, 0, 0, c);
-            }
-            else
-            {
-                strip_set_rgb(star->pos, c, c, 0);
-            }
+        int c = star->b * 128;
+        if (star->rgb == 0)
+        {
+            strip_set_rgb(star->pos, c, 0, 0);
+        }
+        else if (star->rgb == 1)
+        {
+            strip_set_rgb(star->pos, 0, c, 0);
+        }
+        else if (star->rgb == 2)
+        {
+            strip_set_rgb(star->pos, 0, 0, c);
+        }
+        else
+        {
+            strip_set_rgb(star->pos, c, c, 0);
+        }
     }
 
     start();
@@ -807,6 +807,113 @@ void pattern20(void)
     }
 }
 
+void pattern21(void)
+{
+    start();
+
+    SLEEP(0.5);
+
+    strip_set(0, 0x00200000);  // red
+    strip_set(1, 0x00201000);  // orange
+    strip_set(2, 0x00202000);  // yellow
+    strip_set(3, 0x00002000);  // green
+    strip_set(4, 0x00002020);  // lightblue
+    strip_set(5, 0x00000020);  // blue
+    strip_set(6, 0x00100010);  // purple
+    strip_set(7, 0x00200010);  // pink
+
+    time_t t;
+    srand((unsigned) time(&t));
+    int direction = 1;
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_render();
+        SLEEP(0.05);
+
+        if (direction == 1)
+        {
+            strip_shift_down();
+        }
+        else
+        {
+            strip_shift_up();
+        }
+
+        if ((rand() % 1000) < 50)
+        {
+            direction *= -1;
+        }
+
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
+void pattern22(void)
+{
+    start();
+
+    SLEEP(0.5);
+    strip_clear();
+
+    int cix;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+
+    int state = 0;
+    int shifts = 0;
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        if (state == 0)
+        {
+            for (int i = 0; i < HORI; ++i)
+            {
+                cix = (float)rand() / RAND_MAX * colors_count;
+                strip_set(top[i], colors[cix]);
+            }
+
+            strip_render();
+            state = 1;
+            shifts = HORI + VERT;
+            SLEEP(0.5);
+        }
+        else if (state == 1)
+        {
+            strip_shift_down();
+            strip_render();
+            SLEEP(0.025);
+            shifts--;
+            if (shifts == 0)
+            {
+                state = 2;
+            }
+        }
+        else if (state == 2)
+        {
+            SLEEP(0.5);
+            shifts = HORI + VERT;
+            state = 3;
+        }
+        else if (state == 3)
+        {
+            strip_shift_down();
+            strip_render();
+            SLEEP(0.025);
+            shifts--;
+            if (shifts == 0)
+            {
+                state = 0;
+            }
+        }
+
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -818,11 +925,14 @@ int main(void)
     }
 
     int pattern = 0;
+
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
-                                 pattern16, pattern17, pattern18, pattern19, pattern20 };
-    //pattern_func *patterns[] = { pattern20 };
+                                 pattern16, pattern17, pattern18, pattern19, pattern20,
+                                 pattern21, pattern22 };
+
+    // pattern_func *patterns[] = { pattern22 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
     printf("%d patterns\n", pattern_count);
 
