@@ -1007,6 +1007,49 @@ void pattern24(void)
     }
 }
 
+void pattern25(void)
+{
+    start();
+
+    SLEEP(0.5);
+
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    for (int i = 0; i < LED_COUNT; i += 4)
+    {
+        int cix = (float)rand() / RAND_MAX * colors_count;
+        strip_set(i, colors[cix]);
+    }
+
+    time_t t;
+    srand((unsigned) time(&t));
+    int direction = 1;
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_render();
+        SLEEP(0.05);
+
+        if (direction == 1)
+        {
+            strip_shift_down();
+        }
+        else
+        {
+            strip_shift_up();
+        }
+
+        if ((rand() % 1000) < 50)
+        {
+            direction *= -1;
+        }
+
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1020,12 +1063,12 @@ int main(void)
 
     int pattern = 0;
 
-    // pattern_func *patterns[] = { pattern24 };
+    //pattern_func *patterns[] = { pattern25 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
-                                 pattern21, pattern22, pattern23, pattern24 };
+                                 pattern21, pattern22, pattern23, pattern24, pattern25 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     // Shuffle the patterns
