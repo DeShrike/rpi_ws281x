@@ -144,6 +144,16 @@ static const rpi_hw_t rpi_hw_info[] = {
     },
 
     //
+    // Model 3 A+
+    //
+    {
+        .hwver  = 0x9020e0,
+        .type = RPI_HWVER_TYPE_PI2,
+        .periph_base = PERIPH_BASE_RPI2,
+        .videocore_base = VIDEOCORE_BASE_RPI2,
+        .desc = "Model 3 A+ rev 1.0",
+    },
+    //
     // Model B+
     //
     {
@@ -354,6 +364,8 @@ const rpi_hw_t *rpi_hw_detect(void)
                 continue;
             }
 
+            // printf("Rev: %d   %x\n", rev, rev);
+
             for (i = 0; i < (sizeof(rpi_hw_info) / sizeof(rpi_hw_info[0])); i++)
             {
                 uint32_t hwver = rpi_hw_info[i].hwver;
@@ -361,7 +373,7 @@ const rpi_hw_t *rpi_hw_detect(void)
                 // Take out warranty and manufacturer bits
                 hwver &= ~(RPI_WARRANTY_MASK | RPI_MANUFACTURER_MASK);
                 rev &= ~(RPI_WARRANTY_MASK | RPI_MANUFACTURER_MASK);
-                
+
                 if (rev == hwver)
                 {
                     result = &rpi_hw_info[i];
