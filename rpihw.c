@@ -151,7 +151,14 @@ static const rpi_hw_t rpi_hw_info[] = {
         .type = RPI_HWVER_TYPE_PI2,
         .periph_base = PERIPH_BASE_RPI2,
         .videocore_base = VIDEOCORE_BASE_RPI2,
-        .desc = "Model 3 A+ rev 1.0",
+        .desc = "Pi 3 Model A Plus Rev 1.0",
+    },
+    {
+        .hwver  = 0x9020e1,
+        .type = RPI_HWVER_TYPE_PI2,
+        .periph_base = PERIPH_BASE_RPI2,
+        .videocore_base = VIDEOCORE_BASE_RPI2,
+        .desc = "Pi 3 Model A Plus Rev 1.1",
     },
     //
     // Model B+
