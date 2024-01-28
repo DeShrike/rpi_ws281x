@@ -175,6 +175,7 @@ static void setup_handlers(void)
 
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
+    sigaction(SIGHUP, &sa, NULL);
 }
 
 bool neo_init(int pin, int ledcount)
