@@ -79,6 +79,33 @@ void strip_set_rgb(unsigned int index, unsigned char R, unsigned char G, unsigne
     strip[index] = value;
 }
 
+void strip_set_r(unsigned int index, unsigned char R)
+{
+    if (index >= led_count) return;  // has to be smaller than the number of row
+
+    unsigned long value = strip[index];
+    value |= (unsigned long) R;
+    strip[index] = value;
+}
+
+void strip_set_g(unsigned int index, unsigned char G)
+{
+    if (index >= led_count) return;  // has to be smaller than the number of row
+
+    unsigned long value = strip[index];
+    value |= (unsigned long) G << 8;
+    strip[index] = value;
+}
+
+void strip_set_b(unsigned int index, unsigned char B)
+{
+    if (index >= led_count) return;  // has to be smaller than the number of row
+
+    unsigned long value = strip[index];
+    value |= (unsigned long) B << 16;
+    strip[index] = value;
+}
+
 void strip_set(unsigned int index, uint32_t color)
 {
     if (index >= led_count) return;  // has to be smaller than the number of row
