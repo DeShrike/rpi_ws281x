@@ -1235,6 +1235,87 @@ void pattern30(void)
     SLEEP(0.5);
 }
 
+void pattern31(void)
+{
+    void setcenter(int count)
+    {
+        if (count % 2 == 0)
+        {
+            strip_set_rgb(left[1], 50, 50, 50);
+        }
+        else
+        {
+            strip_set_rgb(right[1], 50, 50, 50);
+        }
+    }
+
+    start();
+
+    int count1 = 0;
+    int count2 = 0;
+    SLEEP(0.5);
+    float d = 0.03f;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int i = 0; i < HORI / 2; i++)
+        {
+            strip_set_rgb(bottom[i], 0, 128, 0);
+        }
+
+        setcenter(count1);
+
+        strip_render();
+        SLEEP(d);
+
+        strip_clear();
+        for (int i = 0; i < HORI / 2; i++)
+        {
+            strip_set_rgb(top[i], 0, 0, 128);
+        }
+
+        setcenter(count1);
+
+        strip_render();
+        SLEEP(d);
+
+        strip_clear();
+        for (int i = HORI / 2; i < HORI; i++)
+        {
+            strip_set_rgb(bottom[i], 128, 0, 0);
+        }
+
+        setcenter(count1);
+
+        strip_render();
+        SLEEP(d);
+
+        strip_clear();
+        for (int i = HORI / 2; i < HORI; i++)
+        {
+            strip_set_rgb(top[i], 128, 128, 0);
+        }
+
+        setcenter(count1);
+
+        strip_render();
+        SLEEP(d);
+
+        tick();
+        count2++;
+        if (count2 == 5)
+        {
+            count1++;
+            count2 = 0;
+        }
+    }
+
+    strip_clear();
+    strip_render();
+
+    SLEEP(0.5);
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1248,13 +1329,14 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern30 };
+    //pattern_func *patterns[] = { pattern31 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
-                                 pattern26, pattern27, pattern28, pattern29, pattern30 };
+                                 pattern26, pattern27, pattern28, pattern29, pattern30,
+                                 pattern31 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     // Shuffle the patterns
