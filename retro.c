@@ -1050,6 +1050,146 @@ void pattern25(void)
     SLEEP(0.5);
 }
 
+void pattern26(void)
+{
+    start();
+
+    SLEEP(0.5);
+
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+
+    time_t t;
+    srand((unsigned) time(&t));
+    int dx1 = 1;
+    int dx2 = 1;
+    int dx3 = 1;
+    int x1 = LED_COUNT / 4 * 1;
+    int x2 = LED_COUNT / 4 * 2;
+    int x3 = LED_COUNT / 4 * 3;
+    int cix;
+    int cols[LED_COUNT] = {0};
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        x1 = (x1 + dx1 + LED_COUNT) % LED_COUNT;
+        cols[x1]++;
+        x2 = (x2 + dx2 + LED_COUNT) % LED_COUNT;
+        cols[x2]++;
+        x3 = (x3 + dx3 + LED_COUNT) % LED_COUNT;
+        cols[x3]++;
+
+        cix = cols[x1] % colors_count;
+        strip_set(x1, colors[cix]);
+        cix = cols[x2] % colors_count;
+        strip_set(x2, colors[cix]);
+        cix = cols[x3] % colors_count;
+        strip_set(x3, colors[cix]);
+
+        strip_render();
+        SLEEP(0.05);
+
+        if ((rand() % 1000) < 500)
+        {
+            dx1 *= -1;
+        }
+
+        if ((rand() % 1000) < 500)
+        {
+            dx2 *= -1;
+        }
+
+        if ((rand() % 1000) < 500)
+        {
+            dx3 *= -1;
+        }
+
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
+void pattern27(void)
+{
+    start();
+
+    SLEEP(0.5);
+
+    strip_clear();
+    int r = 128;
+    int x = 0;
+    while (r > 0)
+    {
+        strip_set_rgb(x, 0, r, 0);
+        r -= 5;
+        x++;
+    }
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_render();
+        SLEEP(0.05);
+        strip_shift_down();
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
+void pattern28(void)
+{
+    start();
+
+    SLEEP(0.5);
+
+    strip_clear();
+    int r = 128;
+    int x = 0;
+    while (r > 0)
+    {
+        strip_set_rgb(x, 0, 0, r);
+        r -= 5;
+        x++;
+    }
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_render();
+        SLEEP(0.05);
+        strip_shift_down();
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
+void pattern29(void)
+{
+    start();
+
+    SLEEP(0.5);
+
+    strip_clear();
+    int r = 0;
+    int x = 0;
+    while (r <= 128)
+    {
+        strip_set_rgb(x, r, 0, 0);
+        r += 5;
+        x++;
+    }
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_render();
+        SLEEP(0.05);
+        strip_shift_up();
+        tick();
+    }
+
+    SLEEP(0.5);
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1063,12 +1203,13 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern25 };
+    //pattern_func *patterns[] = { pattern29 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
-                                 pattern21, pattern22, pattern23, pattern24, pattern25 };
+                                 pattern21, pattern22, pattern23, pattern24, pattern25,
+                                 pattern26, pattern27, pattern28, pattern29 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     // Shuffle the patterns
