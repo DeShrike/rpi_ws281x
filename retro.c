@@ -1376,6 +1376,59 @@ void pattern32(void)
     SLEEP(0.5);
 }
 
+void pattern33(void)
+{
+    start();
+
+    int count1 = 0; // 0 to 3
+    int count2 = 0;
+    SLEEP(0.1);
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int i = count1; i < LED_COUNT; i += 4)
+        {
+            if (count1 == 0)
+            {
+                strip_set_rgb(i, 128, 0, 0);
+            }
+            else if (count1 == 1)
+            {
+                strip_set_rgb(i, 0, 128, 0);
+            }
+            else if (count1 == 2)
+            {
+                strip_set_rgb(i, 0, 0, 128);
+            }
+            else if (count1 == 3)
+            {
+                strip_set_rgb(i, 128, 128, 0);
+            }
+        }
+
+        count2++;
+        if (count2 == 4)
+        {
+            count1 = (count1 + 1) % 4;
+            count2 = 0;
+        }
+
+        strip_render();
+        SLEEP(0.1);
+
+        strip_clear();
+        strip_render();
+        SLEEP(0.05);
+
+        tick();
+    }
+
+    strip_clear();
+    strip_render();
+
+    SLEEP(0.5);
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1389,14 +1442,14 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern20 };
+    // pattern_func *patterns[] = { pattern33 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
-                                 pattern31, pattern32 };
+                                 pattern31, pattern32, pattern33 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
