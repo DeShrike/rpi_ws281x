@@ -1,0 +1,19 @@
+[Unit]
+Description=RetroPie cabined neopixel driver
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+WorkingDirectory=/tmp
+Type=simple
+Restart=always
+RestartSec=5
+SyslogIdentifier=retroleds
+User=root
+ExecStart=/usr/bin/retroleds
+WorkingDirectory=/home/pi
+Environment=DUMMYENV=dummy-env
+
+[Install]
+WantedBy=multi-user.target
+

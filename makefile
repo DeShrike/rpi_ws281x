@@ -3,14 +3,14 @@ HEADERS=clk.h dma.h gpio.h mailbox.h pcm.h pwm.h rpihw.h version.h ws2811.h neop
 OBJS=mailbox.o pcm.o pwm.o rpihw.o dma.o ws2811.o neopixel.o
 CFLAGS=-O3
 
-all: retro test1 test2 newtest
+all: retroleds test1 test2 newtest
 
 ####################
 
-retro: retro.o $(OBJS)
+retroleds: retroleds.o $(OBJS)
 	$(CC) $+ -o $@ -lm
 
-retro.o: retro.c $(HEADERS)
+retroleds.o: retroleds.c $(HEADERS)
 	$(CC) -c $< -o $@  $(CFLAGS)
 
 ####################
@@ -60,4 +60,30 @@ ws2811.o: ws2811.c $(HEADERS)
 ####################
 
 clean:
-	rm -f -v *.o test1 test2 newtest retro
+	rm -f -v *.o test1 test2 newtest retroleds
+
+####################
+
+install: retroleds retroleds.service
+	sudo cp retroleds /usr/bin
+	sudo cp retroleds.service /etc/systemd/system
+	sudo systemctl daemon-reload
+
+uninstall: retroleds retroleds.service
+	sudo systemctl stop retroleds
+	sudo systemctl disable retroleds
+	sudo rm /usr/bin/retroleds
+	sudo rm /etc/systemd/system/retroleds.service
+	sudo systemctl daemon-reload
+
+start:
+	sudo systemctl start retroleds
+
+stop:
+	sudo systemctl stop retroleds
+
+enable:
+	sudo systemctl enable retroleds
+
+disable:
+	sudo systemctl disable retroleds
