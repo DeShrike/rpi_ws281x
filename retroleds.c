@@ -1590,8 +1590,7 @@ int main(void)
 
     int pattern = 0;
 
-    pattern_func *patterns[] = { pattern35 };
-    /*
+    //pattern_func *patterns[] = { pattern35 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -1599,7 +1598,6 @@ int main(void)
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35 };
-    */
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
