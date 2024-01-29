@@ -442,7 +442,7 @@ void pattern11(void)
             ix = (ix + 1) % rgb_count;
         }
 
-        ix++;
+        ix = (ix + 1) % rgb_count;
         j++;
         strip_render();
         SLEEP(0.25);
@@ -569,7 +569,7 @@ void pattern15(void)
 
         SLEEP(0.05);
         x = x + dx;
-        if (x <= 0)
+        if (x < 0)
         {
             x = 1;
             dx = -dx;
@@ -724,7 +724,7 @@ void pattern19(void)
 
 void pattern20(void)
 {
-    #define STAR_COUNT 7
+    #define STAR_COUNT (LED_COUNT / 3)
 
     struct star {
         int pos;
@@ -740,7 +740,7 @@ void pattern20(void)
         star->pos = (float)rand() / RAND_MAX * LED_COUNT;
         if (r)
         {
-            star->b = ((float)rand() / RAND_MAX) / 2.0f;
+            star->b = ((float)rand() / RAND_MAX);
         }
         else
         {
@@ -865,16 +865,16 @@ void pattern22(void)
     int state = 0;
     int shifts = 0;
 
+    for (int i = 0; i < HORI; ++i)
+    {
+        cix = (float)rand() / RAND_MAX * colors_count;
+        strip_set(top[i], colors[cix]);
+    }
+
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
     {
         if (state == 0)
         {
-            for (int i = 0; i < HORI; ++i)
-            {
-                cix = (float)rand() / RAND_MAX * colors_count;
-                strip_set(top[i], colors[cix]);
-            }
-
             strip_render();
             state = 1;
             shifts = HORI + VERT;
@@ -1389,7 +1389,7 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern32 };
+    //pattern_func *patterns[] = { pattern20 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -1399,14 +1399,20 @@ int main(void)
                                  pattern31, pattern32 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
+    int* orders = malloc(pattern_count * sizeof(int));
+    for (int i = 0; i < pattern_count; ++i)
+    {
+        orders[i] = i;
+    }
+
     // Shuffle the patterns
     for (int i = 0; i < 1000; ++i)
     {
         int a = rand() % pattern_count;
         int b = rand() % pattern_count;
-        pattern_func *temp = patterns[a];
-        patterns[a] = patterns[b];
-        patterns[b] = temp;
+        int temp = orders[a];
+        orders[a] = orders[b];
+        orders[b] = temp;
     }
 
     printf("%d patterns\n", pattern_count);
@@ -1415,12 +1421,13 @@ int main(void)
     tick();
     while (!neo_loop_stop())
     {
-        printf("\rPattern %d ", pattern + 1);
+        printf("\rPattern %d ", orders[pattern] + 1);
         fflush(stdout);
-        (patterns[pattern])();
+        (patterns[orders[pattern]])();
         pattern = (pattern + 1) % pattern_count;
     }
 
+    free(orders);
     printf("\nCleaning up\n");
     neo_deinit();
 
