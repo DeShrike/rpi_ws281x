@@ -1407,16 +1407,164 @@ void pattern33(void)
         }
 
         count2++;
-        if (count2 == 4)
+        if (count2 == 3)
         {
             count1 = (count1 + 1) % 4;
             count2 = 0;
         }
 
         strip_render();
-        SLEEP(0.1);
+        SLEEP(0.05);
 
         strip_clear();
+        strip_render();
+        SLEEP(0.1);
+
+        tick();
+    }
+
+    strip_clear();
+    strip_render();
+
+    SLEEP(0.5);
+}
+
+void pattern34(void)
+{
+    start();
+
+    int count1 = 0; // 0 to 3
+    SLEEP(0.1);
+    int c = 0;
+    int dc = 10;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int i = count1; i < LED_COUNT; i += 4)
+        {
+            if (count1 == 0)
+            {
+                strip_set_rgb(i, c, 0, 0);
+            }
+            else if (count1 == 1)
+            {
+                strip_set_rgb(i, 0, c, 0);
+            }
+            else if (count1 == 2)
+            {
+                strip_set_rgb(i, 0, 0, c);
+            }
+            else if (count1 == 3)
+            {
+                strip_set_rgb(i, c, c, 0);
+            }
+        }
+
+        c = c + dc;
+        if (c > 128)
+        {
+            dc = -dc;
+        }
+        else if (c < 0)
+        {
+            count1 = (count1 + 1) % 4;
+            c = 0;
+            dc = 10;
+        }
+
+        strip_render();
+        SLEEP(0.05);
+
+        tick();
+    }
+
+    strip_clear();
+    strip_render();
+
+    SLEEP(0.5);
+}
+
+void pattern35(void)
+{
+    start();
+
+    int speed = 15;
+    SLEEP(0.1);
+    int r = 0;
+    int g = 50;
+    int b = 50;
+    int y = 100;
+    int dr = speed;
+    int dg = -speed;
+    int db = speed;
+    int dy = -speed;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int i = 0; i < LED_COUNT; i += 4)
+        {
+            strip_set_rgb(i, r, 0, 0);
+        }
+
+        for (int i = 1; i < LED_COUNT; i += 4)
+        {
+            strip_set_rgb(i, 0, g, 0);
+        }
+
+        for (int i = 2; i < LED_COUNT; i += 4)
+        {
+            strip_set_rgb(i, 0, 0, b);
+        }
+
+        for (int i = 3; i < LED_COUNT; i += 4)
+        {
+            strip_set_rgb(i, y, y, 0);
+        }
+
+        r = r + dr;
+        if (r > 128)
+        {
+            dr = -dr;
+        }
+        else if (r < 0)
+        {
+            r = 0;
+            dr = speed;
+        }
+
+        g = g + dg;
+        if (g > 128)
+        {
+            dg = -dg;
+        }
+        else if (g < 0)
+        {
+            g = 0;
+            dg = speed;
+        }
+
+        b = b + db;
+        if (b > 128)
+        {
+            db = -db;
+        }
+        else if (b < 0)
+        {
+            b = 0;
+            db = speed;
+        }
+
+        y = y + dy;
+        if (y > 128)
+        {
+            dy = -dy;
+        }
+        else if (y < 0)
+        {
+            y = 0;
+            dy = speed;
+        }
+
         strip_render();
         SLEEP(0.05);
 
@@ -1442,14 +1590,16 @@ int main(void)
 
     int pattern = 0;
 
-    // pattern_func *patterns[] = { pattern33 };
+    pattern_func *patterns[] = { pattern35 };
+    /*
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
-                                 pattern31, pattern32, pattern33 };
+                                 pattern31, pattern32, pattern33, pattern34, pattern35 };
+    */
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
