@@ -1577,6 +1577,102 @@ void pattern35(void)
     SLEEP(0.5);
 }
 
+void pattern36(void)
+{
+    struct star {
+        int startDelay;
+        int pos;
+        int rgb;
+        float b;
+        float deltab;
+    };
+
+    void makestar(struct star *star, int pos)
+    {
+        star->b = 0;
+        star->deltab = rand() % 12 + 7;
+        star->startDelay = rand() % 10 + 3;
+        star->rgb = rand() % 6;
+        star->pos = pos;
+    }
+
+    void updatestar(struct star *star)
+    {
+        if (star->startDelay > 0)
+        {
+            star->startDelay--;
+        }
+        else
+        {
+            star->b += star->deltab;
+            if (star->b > 128)
+            {
+                star->deltab = -star->deltab;
+            }
+
+            if (star->b < 0)
+            {
+                star->b = 0;
+                star->deltab = -star->deltab;
+                star->rgb = rand() % 6;
+                star->deltab = rand() % 12 + 7;
+            }
+        }
+    }
+
+    void drawstar(struct star *star)
+    {
+        int c = star->b;
+        if (star->rgb == 0)
+        {
+            strip_set_rgb(star->pos, c, 0, 0);
+        }
+        else if (star->rgb == 1)
+        {
+            strip_set_rgb(star->pos, 0, c, 0);
+        }
+        else if (star->rgb == 2)
+        {
+            strip_set_rgb(star->pos, 0, 0, c);
+        }
+        else if (star->rgb == 3)
+        {
+            strip_set_rgb(star->pos, 0, c, c);
+        }
+        else if (star->rgb == 4)
+        {
+            strip_set_rgb(star->pos, c, 0, c);
+        }
+        else if (star->rgb == 5)
+        {
+            strip_set_rgb(star->pos, c, c, 0);
+        }
+    }
+
+    start();
+
+    struct star stars[LED_COUNT];
+    for (int i = 0; i < LED_COUNT; ++i)
+    {
+        makestar(&stars[i], i);
+    }
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        strip_clear();
+        for (int i = 0; i < LED_COUNT; i++)
+        {
+            drawstar(&stars[i]);
+            updatestar(&stars[i]);
+        }
+
+        strip_render();
+        SLEEP(0.1);
+
+        tick();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1590,14 +1686,15 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern35 };
+    //pattern_func *patterns[] = { pattern36 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
-                                 pattern31, pattern32, pattern33, pattern34, pattern35 };
+                                 pattern31, pattern32, pattern33, pattern34, pattern35,
+                                 pattern36 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
