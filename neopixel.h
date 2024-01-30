@@ -14,7 +14,7 @@
 //#define STRIP_TYPE            SK6812_STRIP_RGBW		// SK6812RGBW (NOT SK6812RGB)
 
 bool neo_init(int pin, int ledcount);
-void neo_deinit();
+void neo_deinit(bool clear);
 bool neo_loop_stop();
 
 void strip_render();

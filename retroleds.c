@@ -1726,8 +1726,17 @@ int main(void)
     }
 
     free(orders);
+
+    strip_clear();
+    for (int i = 0; i < LED_COUNT; i += 2)
+    {
+        strip_set_rgb(i, 5, 0, 0);
+    }
+
+    strip_render();
+
     printf("\nCleaning up\n");
-    neo_deinit();
+    neo_deinit(false);
 
     return 0;
 }

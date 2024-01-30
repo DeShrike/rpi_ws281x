@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     }
 
     printf("\nCleanup\n");
-    neo_deinit();
+    neo_deinit(true);
 
     return 0;
 }

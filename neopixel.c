@@ -1,4 +1,5 @@
 #include <signal.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -200,14 +201,17 @@ bool neo_init(int pin, int ledcount)
         fprintf(stderr, "ws2811_init failed: %s\n", ws2811_get_return_t_str(ret));
         return false;
     }
-    
+
     return true;
 }
 
-void neo_deinit()
+void neo_deinit(bool clear)
 {
-    strip_clear();
-    strip_render();
+    if (clear)
+    {
+        strip_clear();
+        strip_render();
+    }
 
     ws2811_fini(&ledstring);
 
