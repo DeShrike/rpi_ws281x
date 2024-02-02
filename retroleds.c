@@ -637,7 +637,7 @@ void pattern17(void)
         strip_set_rgb((ix + 5) % LED_COUNT, 120, 0, 0);
         strip_set_rgb((ix + 6) % LED_COUNT, 0, 140, 0);
         strip_render();
-        SLEEP(0.1);
+        SLEEP(0.05);
         ix++;
 
         tick();
@@ -1596,6 +1596,15 @@ void pattern36(void)
         star->pos = pos;
     }
 
+    void resetstar(struct star *star)
+    {
+        star->b = 0;
+        star->deltab = -star->deltab;
+        star->rgb = rand() % 6;
+        star->deltab = rand() % 12 + 7;
+        star->startDelay = rand() % 10 + 3;
+    }
+
     void updatestar(struct star *star)
     {
         if (star->startDelay > 0)
@@ -1612,10 +1621,7 @@ void pattern36(void)
 
             if (star->b < 0)
             {
-                star->b = 0;
-                star->deltab = -star->deltab;
-                star->rgb = rand() % 6;
-                star->deltab = rand() % 12 + 7;
+                resetstar(star);
             }
         }
     }
@@ -1673,6 +1679,41 @@ void pattern36(void)
     }
 }
 
+void pattern37(void)
+{
+    start();
+    int ixr = 0;
+    int ixg = LED_COUNT / 6;
+    int ixb = LED_COUNT / 6 * 2;
+    int ixy = LED_COUNT / 6 * 3;
+    int ixc = LED_COUNT / 6 * 4;
+    int ixm = LED_COUNT / 6 * 5;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        strip_set_rgb(ixr, 128, 0, 0);
+        strip_set_rgb(ixg, 0, 128, 0);
+        strip_set_rgb(ixb, 0, 0, 128);
+        strip_set_rgb(ixy, 128, 128, 0);
+        strip_set_rgb(ixc, 128, 0, 128);
+        strip_set_rgb(ixm, 0, 128, 128);
+        strip_render();
+        SLEEP(0.1);
+
+        ixr = (ixr + 1) % LED_COUNT;
+        ixg = (ixg - 1);
+        if (ixg < 0) ixg = LED_COUNT - 1;
+        ixb = (ixb + 1) % LED_COUNT;
+        ixy = (ixy - 1);
+        if (ixy < 0) ixy = LED_COUNT - 1;
+        ixc = (ixc + 1) % LED_COUNT;
+        ixm = (ixm - 1);
+        if (ixm < 0) ixm = LED_COUNT - 1;
+
+        tick();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1686,7 +1727,7 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern36 };
+    // pattern_func *patterns[] = { pattern37 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -1694,7 +1735,7 @@ int main(void)
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
-                                 pattern36 };
+                                 pattern36, pattern37 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
@@ -1728,9 +1769,9 @@ int main(void)
     free(orders);
 
     strip_clear();
-    for (int i = 0; i < LED_COUNT; i += 2)
+    for (int i = 0; i < LED_COUNT; i += 4)
     {
-        strip_set_rgb(i, 5, 0, 0);
+        strip_set_rgb(i, 4, 0, 0);
     }
 
     strip_render();
