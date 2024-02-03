@@ -1,7 +1,8 @@
 #include <assert.h>
+#include <math.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 #include <time.h>
 #include "neopixel.h"
 
@@ -1811,7 +1812,12 @@ int main(void)
     strip_clear();
     for (int i = 0; i < LED_COUNT; i += 4)
     {
-        strip_set_rgb(i, 4, 0, 0);
+        if (received_signal == SIGINT)
+            strip_set_rgb(i, 4, 0, 0);
+        else if (received_signal == SIGTERM)
+            strip_set_rgb(i, 0, 4, 0);
+        else if (received_signal == SIGHUP)
+            strip_set_rgb(i, 0, 0, 4);
     }
 
     strip_render();

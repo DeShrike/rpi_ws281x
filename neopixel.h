@@ -13,6 +13,8 @@
 #define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
 //#define STRIP_TYPE            SK6812_STRIP_RGBW		// SK6812RGBW (NOT SK6812RGB)
 
+extern int received_signal;
+
 bool neo_init(int pin, int ledcount);
 void neo_deinit(bool clear);
 bool neo_loop_stop();

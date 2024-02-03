@@ -15,6 +15,8 @@
 
 static ws2811_led_t *strip;
 
+int received_signal = 0;
+
 static int led_count;
 static int gpio_pin;
 
@@ -163,7 +165,7 @@ void neo_sleep(float second)
 static void ctrl_c_handler(int signum)
 {
     CTRL_C_FLAG = 1; //set ctrl-c flag
-    (void)(signum);
+    received_signal = signum;
     neo_loop_running = 0;
 }
 
