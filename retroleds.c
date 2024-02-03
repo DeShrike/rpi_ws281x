@@ -1813,9 +1813,9 @@ int main(void)
     for (int i = 0; i < LED_COUNT; i += 4)
     {
         if (received_signal == SIGINT)
-            strip_set_rgb(i, 4, 0, 0);
-        else if (received_signal == SIGTERM)
             strip_set_rgb(i, 0, 4, 0);
+        else if (received_signal == SIGTERM)
+            strip_set_rgb(i, 4, 0, 0);
         else if (received_signal == SIGHUP)
             strip_set_rgb(i, 0, 0, 4);
     }
