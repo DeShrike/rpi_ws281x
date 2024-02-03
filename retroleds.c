@@ -6,7 +6,7 @@
 #include "neopixel.h"
 
 #define GPIO_PIN                18
-#define LED_COUNT               30
+#define LED_COUNT               40
 #define PATTERN_DURATION        15
 #define REV(x)                  (LED_COUNT - (x) - 1)
 
@@ -38,7 +38,7 @@ void tick(void)
     time(&current);
 }
 
-#if 0
+#if 1
 
 /*
 
@@ -52,8 +52,8 @@ Strip layout:
 
 */
 
-unsigned int top[18] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-unsigned int bottom[18] = { 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20 };
+unsigned int top[17] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+unsigned int bottom[17] = { 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20 };
 unsigned int right[3] = { 17, 18, 19 };
 unsigned int left[3] = { 37, 38, 39 };
 
@@ -1727,7 +1727,7 @@ int main(void)
 
     int pattern = 0;
 
-    // pattern_func *patterns[] = { pattern37 };
+    //pattern_func *patterns[] = { pattern23 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
