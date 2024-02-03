@@ -384,7 +384,7 @@ void pattern9(void)
             cix = (cix + 1) % ARRAY_SIZE(colors);
         }
 
-        if (x >= WIDTH - 2)
+        if (x >= WIDTH - 1)
         {
             x = WIDTH - 3;
             dx = -dx;
@@ -1727,7 +1727,7 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern23 };
+    //pattern_func *patterns[] = { pattern9 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
