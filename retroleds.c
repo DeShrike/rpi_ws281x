@@ -5,10 +5,16 @@
 #include <time.h>
 #include "neopixel.h"
 
-#define GPIO_PIN                18
+// SPI: Pin 10
+#define GPIO_PIN                10
+
+// PWM: Pin 18
+//#define GPIO_PIN                18
+
 #define LED_COUNT               40
 #define PATTERN_DURATION        15
 #define REV(x)                  (LED_COUNT - (x) - 1)
+#define MAX_BRIGHTNESS           100
 
 typedef void pattern_func(void);
 
@@ -167,10 +173,10 @@ void pattern2(void)
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
-        strip_set_rgb(ixr, 128, 0, 0);
-        strip_set_rgb(ixg, 0, 128, 0);
-        strip_set_rgb(ixb, 0, 0, 128);
-        strip_set_rgb(ixy, 128, 128, 0);
+        strip_set_rgb(ixr, MAX_BRIGHTNESS, 0, 0);
+        strip_set_rgb(ixg, 0, MAX_BRIGHTNESS, 0);
+        strip_set_rgb(ixb, 0, 0, MAX_BRIGHTNESS);
+        strip_set_rgb(ixy, MAX_BRIGHTNESS, MAX_BRIGHTNESS, 0);
         strip_render();
         SLEEP(0.1);
 
@@ -347,12 +353,12 @@ void pattern8(void)
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
-        strip_set_rgb((ix + 0) % LED_COUNT, 128, 0, 0);
-        strip_set_rgb((ix + 1) % LED_COUNT, 0, 128, 0);
-        strip_set_rgb((ix + 2) % LED_COUNT, 0, 0, 128);
-        strip_set_rgb((ix + 3) % LED_COUNT, 128, 128, 0);
-        strip_set_rgb((ix + 4) % LED_COUNT, 128, 0, 128);
-        strip_set_rgb((ix + 5) % LED_COUNT, 0, 128, 128);
+        strip_set_rgb((ix + 0) % LED_COUNT, MAX_BRIGHTNESS, 0, 0);
+        strip_set_rgb((ix + 1) % LED_COUNT, 0, MAX_BRIGHTNESS, 0);
+        strip_set_rgb((ix + 2) % LED_COUNT, 0, 0, MAX_BRIGHTNESS);
+        strip_set_rgb((ix + 3) % LED_COUNT, MAX_BRIGHTNESS, MAX_BRIGHTNESS, 0);
+        strip_set_rgb((ix + 4) % LED_COUNT, MAX_BRIGHTNESS, 0, MAX_BRIGHTNESS);
+        strip_set_rgb((ix + 5) % LED_COUNT, 0, MAX_BRIGHTNESS, MAX_BRIGHTNESS);
         strip_render();
         SLEEP(0.05);
         ix++;
@@ -765,7 +771,7 @@ void pattern20(void)
 
     void drawstar(struct star *star)
     {
-        int c = star->b * 128;
+        int c = star->b * MAX_BRIGHTNESS;
         if (star->rgb == 0)
         {
             strip_set_rgb(star->pos, c, 0, 0);
@@ -922,13 +928,13 @@ void pattern23(void)
     SLEEP(0.5);
     strip_clear();
 
-    strip_set_rgb(left[0], 128, 0, 0);
-    strip_set_rgb(left[1], 0, 128, 0);
-    strip_set_rgb(left[2], 0, 0, 128);
+    strip_set_rgb(left[0], MAX_BRIGHTNESS, 0, 0);
+    strip_set_rgb(left[1], 0, MAX_BRIGHTNESS, 0);
+    strip_set_rgb(left[2], 0, 0, MAX_BRIGHTNESS);
 
-    strip_set_rgb(right[0], 128, 0, 0);
-    strip_set_rgb(right[1], 0, 128, 0);
-    strip_set_rgb(right[2], 0, 0, 128);
+    strip_set_rgb(right[0], MAX_BRIGHTNESS, 0, 0);
+    strip_set_rgb(right[1], 0, MAX_BRIGHTNESS, 0);
+    strip_set_rgb(right[2], 0, 0, MAX_BRIGHTNESS);
 
     int state = 0;
     int shifts = 0;
@@ -1207,11 +1213,11 @@ void pattern30(void)
         for (int i = 0; i < 5; i++)
         {
             x = (x1 + i) % LED_COUNT;
-            strip_set_r(x, 128);
+            strip_set_r(x, MAX_BRIGHTNESS);
             x = (x2 + i) % LED_COUNT;
-            strip_set_g(x, 128);
+            strip_set_g(x, MAX_BRIGHTNESS);
             x = (x3 + i) % LED_COUNT;
-            strip_set_b(x, 128);
+            strip_set_b(x, MAX_BRIGHTNESS);
         }
 
         strip_render();
@@ -1260,7 +1266,7 @@ void pattern31(void)
         strip_clear();
         for (int i = 0; i < HORI / 2; i++)
         {
-            strip_set_rgb(bottom[i], 0, 128, 0);
+            strip_set_rgb(bottom[i], 0, MAX_BRIGHTNESS, 0);
         }
 
         setcenter(count1);
@@ -1271,7 +1277,7 @@ void pattern31(void)
         strip_clear();
         for (int i = 0; i < HORI / 2; i++)
         {
-            strip_set_rgb(top[i], 0, 0, 128);
+            strip_set_rgb(top[i], 0, 0, MAX_BRIGHTNESS);
         }
 
         setcenter(count1);
@@ -1282,7 +1288,7 @@ void pattern31(void)
         strip_clear();
         for (int i = HORI / 2; i < HORI; i++)
         {
-            strip_set_rgb(bottom[i], 128, 0, 0);
+            strip_set_rgb(bottom[i], MAX_BRIGHTNESS, 0, 0);
         }
 
         setcenter(count1);
@@ -1293,7 +1299,7 @@ void pattern31(void)
         strip_clear();
         for (int i = HORI / 2; i < HORI; i++)
         {
-            strip_set_rgb(top[i], 128, 128, 0);
+            strip_set_rgb(top[i], MAX_BRIGHTNESS, MAX_BRIGHTNESS, 0);
         }
 
         setcenter(count1);
@@ -1331,26 +1337,26 @@ void pattern32(void)
         {
             for (int i = 0; i < VERT; i++)
             {
-                strip_set_rgb(left[i], 0, 0, 128);
+                strip_set_rgb(left[i], 0, 0, MAX_BRIGHTNESS);
             }
 
             for (int i = 0; i < HORI / 2; i++)
             {
-                strip_set_rgb(bottom[i], 0, 0, 128);
-                strip_set_rgb(top[i], 0, 0, 128);
+                strip_set_rgb(bottom[i], 0, 0, MAX_BRIGHTNESS);
+                strip_set_rgb(top[i], 0, 0, MAX_BRIGHTNESS);
             }
         }
         else
         {
             for (int i = 0; i < VERT; i++)
             {
-                strip_set_rgb(right[i], 0, 0, 128);
+                strip_set_rgb(right[i], 0, 0, MAX_BRIGHTNESS);
             }
 
             for (int i = HORI / 2; i < HORI; i++)
             {
-                strip_set_rgb(bottom[i], 0, 0, 128);
-                strip_set_rgb(top[i], 0, 0, 128);
+                strip_set_rgb(bottom[i], 0, 0, MAX_BRIGHTNESS);
+                strip_set_rgb(top[i], 0, 0, MAX_BRIGHTNESS);
             }
         }
 
@@ -1390,19 +1396,19 @@ void pattern33(void)
         {
             if (count1 == 0)
             {
-                strip_set_rgb(i, 128, 0, 0);
+                strip_set_rgb(i, MAX_BRIGHTNESS, 0, 0);
             }
             else if (count1 == 1)
             {
-                strip_set_rgb(i, 0, 128, 0);
+                strip_set_rgb(i, 0, MAX_BRIGHTNESS, 0);
             }
             else if (count1 == 2)
             {
-                strip_set_rgb(i, 0, 0, 128);
+                strip_set_rgb(i, 0, 0, MAX_BRIGHTNESS);
             }
             else if (count1 == 3)
             {
-                strip_set_rgb(i, 128, 128, 0);
+                strip_set_rgb(i, MAX_BRIGHTNESS, MAX_BRIGHTNESS, 0);
             }
         }
 
@@ -1691,12 +1697,12 @@ void pattern37(void)
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
-        strip_set_rgb(ixr, 128, 0, 0);
-        strip_set_rgb(ixg, 0, 128, 0);
-        strip_set_rgb(ixb, 0, 0, 128);
-        strip_set_rgb(ixy, 128, 128, 0);
-        strip_set_rgb(ixc, 128, 0, 128);
-        strip_set_rgb(ixm, 0, 128, 128);
+        strip_set_rgb(ixr, MAX_BRIGHTNESS, 0, 0);
+        strip_set_rgb(ixg, 0, MAX_BRIGHTNESS, 0);
+        strip_set_rgb(ixb, 0, 0, MAX_BRIGHTNESS);
+        strip_set_rgb(ixy, MAX_BRIGHTNESS, MAX_BRIGHTNESS, 0);
+        strip_set_rgb(ixc, MAX_BRIGHTNESS, 0, MAX_BRIGHTNESS);
+        strip_set_rgb(ixm, 0, MAX_BRIGHTNESS, MAX_BRIGHTNESS);
         strip_render();
         SLEEP(0.1);
 
