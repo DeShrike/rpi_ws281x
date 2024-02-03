@@ -689,7 +689,7 @@ void pattern19(void)
     int cix = (float)rand() / RAND_MAX * colors_count;
 
     SLEEP(0.5);
-    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
     {
         strip_clear();
         strip_set(REV(i), colors[cix]);
