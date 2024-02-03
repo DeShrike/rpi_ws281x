@@ -1073,7 +1073,6 @@ void pattern26(void)
     int x1 = LED_COUNT / 4 * 1;
     int x2 = LED_COUNT / 4 * 2;
     int x3 = LED_COUNT / 4 * 3;
-    int cix;
     int cols[LED_COUNT] = {0};
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
     {
@@ -1084,12 +1083,47 @@ void pattern26(void)
         x3 = (x3 + dx3 + LED_COUNT) % LED_COUNT;
         cols[x3]++;
 
-        cix = cols[x1] % colors_count;
-        strip_set(x1, colors[cix]);
-        cix = cols[x2] % colors_count;
-        strip_set(x2, colors[cix]);
-        cix = cols[x3] % colors_count;
-        strip_set(x3, colors[cix]);
+        if (cols[x1] >= colors_count)
+        {
+            cols[x1] = -1;
+        }
+
+        if (cols[x2] >= colors_count)
+        {
+            cols[x2] = -1;
+        }
+
+        if (cols[x3] >= colors_count)
+        {
+            cols[x3] = -1;
+        }
+
+        if (cols[x1] == -1)
+        {
+            strip_set_rgb(x1, 0, 0, 0);
+        }
+        else
+        {
+            strip_set(x1, colors[cols[x1]]);
+        }
+
+        if (cols[x2] == -1)
+        {
+            strip_set_rgb(x2, 0, 0, 0);
+        }
+        else
+        {
+            strip_set(x2, colors[cols[x2]]);
+        }
+
+        if (cols[x3] == -1)
+        {
+            strip_set_rgb(x3, 0, 0, 0);
+        }
+        else
+        {
+            strip_set(x3, colors[cols[x3]]);
+        }
 
         strip_render();
         SLEEP(0.05);
@@ -1733,7 +1767,7 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern9 };
+    //pattern_func *patterns[] = { pattern26 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
