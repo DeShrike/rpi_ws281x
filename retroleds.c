@@ -45,8 +45,6 @@ void tick(void)
     time(&current);
 }
 
-#if 1
-
 /*
 
 Strip layout:
@@ -64,26 +62,16 @@ unsigned int bottom[17] = { 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 
 unsigned int right[3] = { 17, 18, 19 };
 unsigned int left[3] = { 37, 38, 39 };
 
-#else
-
-/*
-
-Strip layout:
-
- 00 01 02 03 04 05 06 07 08 09 10 11
-29                                 12
-28                                 13
-27                                 14
- 26 25 24 23 22 21 20 19 18 17 16 15
-
-*/
-
-unsigned int top[12] =    {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11 };
-unsigned int bottom[12] = { 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15 };
-unsigned int right[3] =  { 12, 13, 14 };
-unsigned int left[3] = { 27, 28, 29 };
-
-#endif
+unsigned int subs[8][5] = {
+    { 1, 2, 3, 4, 5 },
+    { 6, 7, 8, 9, 10 },
+    { 11, 12, 13, 14, 15 },
+    { 16, 17, 18, 19, 20 },
+    { 21, 22, 23, 24, 25 },
+    { 26, 27, 28, 29, 30 },
+    { 31, 32, 33, 34, 35 },
+    { 36, 37, 38, 39, 0 }
+};
 
 //#define SLEEP sleep_ms
 #define SLEEP neo_sleep
@@ -1755,6 +1743,209 @@ void pattern37(void)
     }
 }
 
+void pattern38(void)
+{
+    start();
+    int six = rand() % 8;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        int nsix = rand() % 8;
+        while (six == nsix)
+        {
+            nsix = rand() % 8;
+        }
+
+        six = nsix;
+
+        int cix = (float)rand() / RAND_MAX * colors_count;
+        for (int i = 0; i < 5; i++)
+        {
+            strip_set(subs[six][i], colors[cix]);
+        }
+
+        strip_render();
+        SLEEP(0.1);
+        tick();
+    }
+}
+
+void pattern39(void)
+{
+    start();
+    strip_clear();
+    int six = rand() % 8;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        int nsix = rand() % 8;
+        while (six == nsix)
+        {
+            nsix = rand() % 8;
+        }
+
+        six = nsix;
+
+        int cix = (float)rand() / RAND_MAX * colors_count;
+        for (int i = 1; i < 5; i++)
+        {
+            strip_set(subs[six][i], colors[cix]);
+        }
+
+        strip_render();
+        SLEEP(0.1);
+        tick();
+    }
+}
+
+void pattern40(void)
+{
+    struct star {
+        int startDelay;
+        int pos;
+        int rgb;
+        float b;
+        float deltab;
+    };
+
+    void makestar(struct star *star, int pos)
+    {
+        star->b = 0;
+        star->deltab = rand() % 12 + 7;
+        star->startDelay = rand() % 10 + 3;
+        star->rgb = rand() % 6;
+        star->pos = pos;
+    }
+
+    void resetstar(struct star *star)
+    {
+        star->b = 0;
+        star->deltab = -star->deltab;
+        star->rgb = rand() % 6;
+        star->deltab = rand() % 12 + 7;
+        star->startDelay = rand() % 10 + 3;
+    }
+
+    void updatestar(struct star *star)
+    {
+        if (star->startDelay > 0)
+        {
+            star->startDelay--;
+        }
+        else
+        {
+            star->b += star->deltab;
+            if (star->b > 128)
+            {
+                star->deltab = -star->deltab;
+            }
+
+            if (star->b < 0)
+            {
+                resetstar(star);
+            }
+        }
+    }
+
+    void drawstar(struct star *star)
+    {
+        int c = star->b;
+        if (star->rgb == 0)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set_rgb(subs[star->pos][i], c, 0, 0);
+            }
+        }
+        else if (star->rgb == 1)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set_rgb(subs[star->pos][i], 0, c, 0);
+            }
+        }
+        else if (star->rgb == 2)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set_rgb(subs[star->pos][i], 0, 0, c);
+            }
+        }
+        else if (star->rgb == 3)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set_rgb(subs[star->pos][i], 0, c, c);
+            }
+        }
+        else if (star->rgb == 4)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set_rgb(subs[star->pos][i], c, 0, c);
+            }
+        }
+        else if (star->rgb == 5)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set_rgb(subs[star->pos][i], c, c, 0);
+            }
+        }
+    }
+
+    start();
+
+    struct star stars[8];
+    for (int i = 0; i < 8; ++i)
+    {
+        makestar(&stars[i], i);
+    }
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        strip_clear();
+        for (int i = 0; i < 8; i++)
+        {
+            drawstar(&stars[i]);
+            updatestar(&stars[i]);
+        }
+
+        strip_render();
+        SLEEP(0.1);
+
+        tick();
+    }
+}
+
+void pattern41(void)
+{
+    start();
+    strip_clear();
+    int six1 = 0;
+    int six2 = 4;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix1 = (float)rand() / RAND_MAX * colors_count;
+    int cix2 = (float)rand() / RAND_MAX * colors_count;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int i = 0; i < 5; i++)
+        {
+            strip_set(subs[six1][i], colors[cix1]);
+            strip_set(subs[six2][i], colors[cix2]);
+        }
+
+        strip_render();
+
+        six1 = (six1 + 1) % 8;
+        six2 = (six2 + 1) % 8;
+        SLEEP(0.1);
+        tick();
+    }
+}
+
 int main(void)
 {
     srand(time(NULL));
@@ -1768,7 +1959,7 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern26 };
+    //pattern_func *patterns[] = { pattern38, pattern39, pattern40, pattern41 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -1776,7 +1967,8 @@ int main(void)
                                  pattern21, pattern22, pattern23, pattern24, pattern25,
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
-                                 pattern36, pattern37 };
+                                 pattern36, pattern37, pattern38, pattern39, pattern40,
+                                 pattern41 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
