@@ -6,8 +6,13 @@
 #include <time.h>
 #include "neopixel.h"
 
+///////////////////////////////////////////////////////////////////////
+// For RetroPie, use PCM pin 21 !!!!
+// SPI and PWM do not work together with the sound setup of RetroPie.
+///////////////////////////////////////////////////////////////////////
+
 // SPI: Pin 10
-//#define GPIO_PIN                10
+#define GPIO_PIN                10
 
 // PWM: Pin 18
 //#define GPIO_PIN                18
@@ -16,10 +21,12 @@
 //#define GPIO_PIN                12
 
 // PCM: Pin 21
-#define GPIO_PIN                21
+//#define GPIO_PIN                21
 
+// PCM: Pin 31
+//#define GPIO_PIN                31
 
-#define LED_COUNT               20
+#define LED_COUNT               40
 #define PATTERN_DURATION        15
 #define REV(x)                  (LED_COUNT - (x) - 1)
 #define MAX_BRIGHTNESS           100
@@ -30,13 +37,13 @@ uint32_t colors[] =
 {
     0x00200000,  // red
     0x00201000,  // orange
+    0x00200010,  // pink
     0x00202000,  // yellow
     0x00002000,  // green
-    0x00002020,  // lightblue
     0x00000020,  // blue
     0x00100010,  // purple
-    0x00200010,  // pink
     0x00202020,  // white
+    0x00002020,  // lightblue
 };
 
 #define DURATION (current - starttime)
@@ -139,6 +146,10 @@ void sleep_ms(int milliseconds)
     usleep((milliseconds % 1000) * 1000);
 #endif
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Patterns Start Here /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 void pattern1(void)
 {
@@ -653,8 +664,16 @@ void pattern18(void)
     int colors_count = sizeof(colors) / sizeof(colors[0]);
     int cix1 = (float)rand() / RAND_MAX * colors_count;
     int cix2 = (float)rand() / RAND_MAX * colors_count;
+    while (cix2 == cix1)
+        cix2 = (float)rand() / RAND_MAX * colors_count;
+
     int cix3 = (float)rand() / RAND_MAX * colors_count;
+    while (cix3 == cix1 || cix3 == cix2)
+        cix3 = (float)rand() / RAND_MAX * colors_count;
+
     int cix4 = (float)rand() / RAND_MAX * colors_count;
+    while (cix4 == cix1 || cix4 == cix2 || cix4 == cix3)
+        cix4 = (float)rand() / RAND_MAX * colors_count;
 
     SLEEP(1);
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
@@ -664,14 +683,14 @@ void pattern18(void)
         fill_bottom(colors[cix3]);
         fill_left(colors[cix4]);
         strip_render();
-        SLEEP(d);
+        SLEEP(d * d);
 
         strip_clear();
         strip_render();
-        SLEEP(d);
+        SLEEP(d * d);
 
         d += 0.005f;
-        if (d > 0.20f)
+        if (d > 0.50f)
         {
             break;
         }
@@ -982,27 +1001,42 @@ void pattern23(void)
 void pattern24(void)
 {
     start();
-    int ix = 0;
+    int ix1 = 0;
+    int ix2 = LED_COUNT / 2;
     int colors_count = sizeof(colors) / sizeof(colors[0]);
-    int cix = (float)rand() / RAND_MAX * colors_count;
+    int cix1 = (float)rand() / RAND_MAX * colors_count;
+    int cix2 = (float)rand() / RAND_MAX * colors_count;
 
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
-        strip_set(top[ix], colors[cix]);
+        strip_set(top[ix1], colors[cix1]);
+        strip_set(REV(top[ix1]), colors[cix1]);
+        strip_set(top[ix2], colors[cix1]);
+        strip_set(REV(top[ix2]), colors[cix2]);
         strip_render();
-        SLEEP(0.05);
+        SLEEP(0.01);
 
         strip_clear();
-        strip_set(bottom[ix], colors[cix]);
+        strip_set(bottom[ix1], colors[cix1]);
+        strip_set(REV(bottom[ix1]), colors[cix1]);
+        strip_set(bottom[ix2], colors[cix2]);
+        strip_set(REV(bottom[ix2]), colors[cix2]);
         strip_render();
         SLEEP(0.05);
 
-        ix++;
-        if (ix >= HORI)
+        ix1++;
+        if (ix1 >= HORI)
         {
-            cix = (float)rand() / RAND_MAX * colors_count;
-            ix = 0;
+            cix1 = (float)rand() / RAND_MAX * colors_count;
+            ix1 = 0;
+        }
+
+        ix2--;
+        if (ix2 <0)
+        {
+            cix2 = (float)rand() / RAND_MAX * colors_count;
+            ix2 = LED_COUNT;
         }
 
         tick();
@@ -1953,6 +1987,10 @@ void pattern41(void)
     }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 int main(void)
 {
     srand(time(NULL));
@@ -1966,8 +2004,8 @@ int main(void)
 
     int pattern = 0;
 
-    pattern_func *patterns[] = { pattern8 };
-    /*pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
+    // pattern_func *patterns[] = { pattern18, pattern24 };
+    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
@@ -1975,7 +2013,7 @@ int main(void)
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
-                                 pattern41 };*/
+                                 pattern41 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
