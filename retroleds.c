@@ -7,12 +7,19 @@
 #include "neopixel.h"
 
 // SPI: Pin 10
-#define GPIO_PIN                10
+//#define GPIO_PIN                10
 
 // PWM: Pin 18
 //#define GPIO_PIN                18
 
-#define LED_COUNT               40
+// PWM: Pin 12
+//#define GPIO_PIN                12
+
+// PCM: Pin 21
+#define GPIO_PIN                21
+
+
+#define LED_COUNT               20
 #define PATTERN_DURATION        15
 #define REV(x)                  (LED_COUNT - (x) - 1)
 #define MAX_BRIGHTNESS           100
@@ -1959,8 +1966,8 @@ int main(void)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern38, pattern39, pattern40, pattern41 };
-    pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
+    pattern_func *patterns[] = { pattern8 };
+    /*pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
                                  pattern16, pattern17, pattern18, pattern19, pattern20,
@@ -1968,7 +1975,7 @@ int main(void)
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
-                                 pattern41 };
+                                 pattern41 };*/
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
