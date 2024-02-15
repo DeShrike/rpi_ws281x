@@ -697,8 +697,6 @@ void pattern18(void)
 
         tick();
     }
-
-    SLEEP(1);
 }
 
 void pattern19(void)
@@ -737,9 +735,6 @@ void pattern19(void)
         tick();
     }
 
-    SLEEP(0.5);
-    strip_clear();
-    strip_render();
     SLEEP(0.5);
 }
 
@@ -869,8 +864,6 @@ void pattern21(void)
 
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern22(void)
@@ -932,8 +925,6 @@ void pattern22(void)
 
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern23(void)
@@ -994,8 +985,6 @@ void pattern23(void)
 
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern24(void)
@@ -1082,8 +1071,6 @@ void pattern25(void)
 
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern26(void)
@@ -1175,8 +1162,6 @@ void pattern26(void)
 
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern27(void)
@@ -1202,8 +1187,6 @@ void pattern27(void)
         strip_shift_down();
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern28(void)
@@ -1229,8 +1212,6 @@ void pattern28(void)
         strip_shift_down();
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern29(void)
@@ -1256,8 +1237,6 @@ void pattern29(void)
         strip_shift_up();
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern30(void)
@@ -1301,8 +1280,6 @@ void pattern30(void)
         SLEEP(0.05);
         tick();
     }
-
-    SLEEP(0.5);
 }
 
 void pattern31(void)
@@ -1379,11 +1356,6 @@ void pattern31(void)
             count2 = 0;
         }
     }
-
-    strip_clear();
-    strip_render();
-
-    SLEEP(0.5);
 }
 
 void pattern32(void)
@@ -1439,11 +1411,6 @@ void pattern32(void)
             count2 = 0;
         }
     }
-
-    strip_clear();
-    strip_render();
-
-    SLEEP(0.5);
 }
 
 void pattern33(void)
@@ -1492,11 +1459,6 @@ void pattern33(void)
 
         tick();
     }
-
-    strip_clear();
-    strip_render();
-
-    SLEEP(0.5);
 }
 
 void pattern34(void)
@@ -1547,11 +1509,6 @@ void pattern34(void)
 
         tick();
     }
-
-    strip_clear();
-    strip_render();
-
-    SLEEP(0.5);
 }
 
 void pattern35(void)
@@ -1640,11 +1597,6 @@ void pattern35(void)
 
         tick();
     }
-
-    strip_clear();
-    strip_render();
-
-    SLEEP(0.5);
 }
 
 void pattern36(void)
@@ -2084,7 +2036,11 @@ int main(void)
     {
         printf("\rPattern %d ", orders[pattern] + 1);
         fflush(stdout);
+
         (patterns[orders[pattern]])();
+        SLEEP(0.25);
+        strip_clear();
+
         pattern = (pattern + 1) % pattern_count;
     }
 
