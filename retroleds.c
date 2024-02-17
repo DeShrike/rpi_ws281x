@@ -2016,6 +2016,129 @@ void pattern43(void)
     }
 }
 
+void pattern44(void)
+{
+    start();
+    strip_clear();
+    int ix = 0;
+    int step = 2;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        for (int j = 0; j < step; j++)
+        {
+            strip_set(ix + j, colors[cix]);
+        }
+
+        strip_render();
+
+        cix = (float)rand() / RAND_MAX * colors_count;
+        ix = (ix + step) % LED_COUNT;
+
+        SLEEP(0.2);
+        tick();
+    }
+}
+
+void pattern45(void)
+{
+    start();
+    strip_clear();
+    int ix = 0;
+    int step = 4;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        for (int j = 0; j < step; j++)
+        {
+            strip_set(ix + j, colors[cix]);
+        }
+
+        strip_render();
+
+        cix = (float)rand() / RAND_MAX * colors_count;
+        ix = (ix + step) % LED_COUNT;
+
+        SLEEP(0.2);
+        tick();
+    }
+}
+
+void pattern46(void)
+{
+    start();
+    strip_clear();
+    int ix = 0;
+    int size = rand() % 4 + 2;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_fill(colors[cix]);
+        for (int j = 0; j < size; j++)
+        {
+            strip_set((ix + j) % LED_COUNT, 0);
+            strip_set((ix + j + (LED_COUNT / 2)) % LED_COUNT, 0);
+        }
+
+        strip_render();
+
+        ix = (ix + 1) % LED_COUNT;
+
+        SLEEP(0.05);
+        tick();
+    }
+}
+
+void pattern47(void)
+{
+    start();
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int subscount = sizeof(subs) / sizeof(subs[0]);
+    int subsize = LED_COUNT / subscount;
+    for (int s = 0; s < subscount; ++s)
+    {
+        for (int i = 0; i < subsize; i++)
+        {
+            strip_set(subs[s][i], colors[s % colors_count]);
+        }
+    }
+
+    strip_render();
+
+    int mode = 0;
+    int w = 10;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        if (mode == 0)
+        {
+            w--;
+            if (w == 0)
+            {
+                mode = 1;
+                w = subsize;
+            }
+        }
+        else
+        {
+            strip_shift_down();
+            strip_render();
+            w--;
+            if (w == 0)
+            {
+                mode = 0;
+                w = 10;
+            }
+        }
+
+        SLEEP(0.05);
+        tick();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2033,7 +2156,7 @@ int main(void)
 
     int pattern = 0;
 
-    // pattern_func *patterns[] = { pattern43 };
+    //pattern_func *patterns[] = { pattern47 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -2042,7 +2165,8 @@ int main(void)
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
-                                 pattern41, pattern42, pattern43 };
+                                 pattern41, pattern42, pattern43, pattern44, pattern45,
+                                 pattern46, pattern47 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
