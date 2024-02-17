@@ -1739,15 +1739,16 @@ void pattern37(void)
 void pattern38(void)
 {
     start();
-    int six = rand() % 8;
     int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int subscount = sizeof(subs) / sizeof(subs[0]);
+    int six = rand() % subscount;
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
-        int nsix = rand() % 8;
+        int nsix = rand() % subscount;
         while (six == nsix)
         {
-            nsix = rand() % 8;
+            nsix = rand() % subscount;
         }
 
         six = nsix;
@@ -1770,12 +1771,13 @@ void pattern39(void)
     strip_clear();
     int six = rand() % 8;
     int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int subscount = sizeof(subs) / sizeof(subs[0]);
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
-        int nsix = rand() % 8;
+        int nsix = rand() % subscount;
         while (six == nsix)
         {
-            nsix = rand() % 8;
+            nsix = rand() % subscount;
         }
 
         six = nsix;
@@ -1890,8 +1892,10 @@ void pattern40(void)
 
     start();
 
-    struct star stars[8];
-    for (int i = 0; i < 8; ++i)
+    int subscount = sizeof(subs) / sizeof(subs[0]);
+
+    struct star stars[8];   // subscount
+    for (int i = 0; i < subscount; ++i)
     {
         makestar(&stars[i], i);
     }
@@ -1899,7 +1903,7 @@ void pattern40(void)
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
     {
         strip_clear();
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < subscount; i++)
         {
             drawstar(&stars[i]);
             updatestar(&stars[i]);
@@ -1921,6 +1925,7 @@ void pattern41(void)
     int colors_count = sizeof(colors) / sizeof(colors[0]);
     int cix1 = (float)rand() / RAND_MAX * colors_count;
     int cix2 = (float)rand() / RAND_MAX * colors_count;
+    int subscount = sizeof(subs) / sizeof(subs[0]);
     while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
     {
         strip_clear();
@@ -1932,8 +1937,8 @@ void pattern41(void)
 
         strip_render();
 
-        six1 = (six1 + 1) % 8;
-        six2 = (six2 + 1) % 8;
+        six1 = (six1 + 1) % subscount;
+        six2 = (six2 + 1) % subscount;
         SLEEP(0.1);
         tick();
     }
@@ -1983,6 +1988,34 @@ void pattern42(void)
     }
 }
 
+void pattern43(void)
+{
+    start();
+    strip_clear();
+    int ix = 0;
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+    int subscount = sizeof(subs) / sizeof(subs[0]);
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int s = ix; s < subscount; s += 4)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                strip_set(subs[s][i], colors[cix]);
+            }
+        }
+
+        strip_render();
+
+        ix = (ix + 1) % 4;
+        cix = (float)rand() / RAND_MAX * colors_count;
+        SLEEP(0.05);
+        tick();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2000,7 +2033,7 @@ int main(void)
 
     int pattern = 0;
 
-    // pattern_func *patterns[] = { pattern18, pattern24, pattern42 };
+    // pattern_func *patterns[] = { pattern43 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -2009,7 +2042,7 @@ int main(void)
                                  pattern26, pattern27, pattern28, pattern29, pattern30,
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
-                                 pattern41, pattern42 };
+                                 pattern41, pattern42, pattern43 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
