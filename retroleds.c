@@ -33,8 +33,8 @@
 #define REV(x)                  (LED_COUNT - (x) - 1)
 #define MAX_BRIGHTNESS           100
 
-#define LOGFILEMASK "/home/pi/ram/retroleds-%04d%02d%02d.log"
-// #define LOGFILEMASK "/var/log/retroleds-%04d%02d%02d.log"
+// #define LOGFILEMASK "/home/pi/ram/retroleds-%04d%02d%02d.log"
+#define LOGFILEMASK "/var/log/retroleds-%04d%02d%02d.log"
 
 typedef void pattern_func(void);
 
@@ -2179,6 +2179,81 @@ void pattern48(void)
     }
 }
 
+void pattern49(void)
+{
+    start();
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int subscount = sizeof(subs) / sizeof(subs[0]);
+    int subsize = LED_COUNT / subscount;
+    int ix = 0;
+    int dix = 1;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int s = 0; s < subscount; ++s)
+        {
+            if (s % 2 == 0)
+            {
+                strip_set(subs[s][ix], colors[s % colors_count]);
+            }
+            else
+            {
+                strip_set(subs[s][subsize - ix - 1], colors[s % colors_count]);
+            }
+        }
+
+        strip_render();
+
+        SLEEP(0.05);
+        tick();
+
+        ix = ix + dix;
+        if (ix < 0)
+        {
+            ix = 1;
+            dix = 1;
+        }
+        else if (ix >= subsize)
+        {
+            ix = subsize - 2;
+            dix = -1;
+        }
+    }
+}
+
+void pattern50(void)
+{
+    start();
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int subscount = sizeof(subs) / sizeof(subs[0]);
+    int subsize = LED_COUNT / subscount;
+    int ix = 0;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION))
+    {
+        strip_clear();
+        for (int s = 0; s < subscount; ++s)
+        {
+            if (s % 2 == 0)
+            {
+                strip_set(subs[s][ix], colors[s % colors_count]);
+            }
+            else
+            {
+                strip_set(subs[s][subsize - ix - 1], colors[s % colors_count]);
+            }
+        }
+
+        strip_render();
+
+        SLEEP(0.05);
+        tick();
+
+        ix = (ix + 1) % subsize;
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2212,7 +2287,7 @@ void write_log()
     time_t t = time(NULL);
     struct tm tm = *localtime(&t);
 
-    sprintf(filename, "/home/pi/ram/retroleds-%04d%02d%02d.log", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    sprintf(filename, LOGFILEMASK, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
     FILE *fp = fopen(filename, "a");
     if (fp == NULL)
     {
@@ -2288,7 +2363,7 @@ int main(int argc, char **argv)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern48 };
+    //pattern_func *patterns[] = { pattern49, pattern50 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -2298,7 +2373,7 @@ int main(int argc, char **argv)
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
                                  pattern41, pattern42, pattern43, pattern44, pattern45,
-                                 pattern46, pattern47, pattern48 };
+                                 pattern46, pattern47, pattern48, pattern49, pattern50 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
