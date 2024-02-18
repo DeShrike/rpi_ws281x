@@ -2144,6 +2144,41 @@ void pattern47(void)
     }
 }
 
+void pattern48(void)
+{
+    start();
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int cix = (float)rand() / RAND_MAX * colors_count;
+    int m = 0;
+    int n = 0;
+
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 3))
+    {
+        strip_clear();
+        strip_set(n, colors[cix]);
+        for (int i = m + 1; i < LED_COUNT; ++i)
+        {
+            strip_set(i, colors[cix]);
+        }
+
+        strip_render();
+        n--;
+        if (n < 0)
+        {
+            m++;
+            n = m;
+            if (m >= LED_COUNT)
+            {
+                break;
+            }
+        }
+
+        SLEEP(0.025);
+        tick();
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2253,7 +2288,7 @@ int main(int argc, char **argv)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern47 };
+    //pattern_func *patterns[] = { pattern48 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -2263,7 +2298,7 @@ int main(int argc, char **argv)
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
                                  pattern41, pattern42, pattern43, pattern44, pattern45,
-                                 pattern46, pattern47 };
+                                 pattern46, pattern47, pattern48 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
