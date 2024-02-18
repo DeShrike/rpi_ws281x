@@ -1,8 +1,10 @@
 #include <assert.h>
 #include <math.h>
 #include <signal.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "neopixel.h"
 
@@ -30,6 +32,9 @@
 #define PATTERN_DURATION        15
 #define REV(x)                  (LED_COUNT - (x) - 1)
 #define MAX_BRIGHTNESS           100
+
+#define LOGFILEMASK "/home/pi/ram/retroleds-%04d%02d%02d.log"
+// #define LOGFILEMASK "/var/log/retroleds-%04d%02d%02d.log"
 
 typedef void pattern_func(void);
 
@@ -1987,12 +1992,104 @@ void pattern42(void)
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int main(void)
+#define MAX_LOG_LINES   10
+char *log_lines[MAX_LOG_LINES] = {0};
+
+void init_log()
 {
+    for (int i = 0; i < MAX_LOG_LINES; ++i)
+    {
+        log_lines[i] = NULL;
+    }
+}
+
+void free_log()
+{
+    for (int i = 0; i < MAX_LOG_LINES; ++i)
+    {
+        if (log_lines[i] != NULL)
+        {
+            free(log_lines[i]);
+            log_lines[i] = NULL;
+        }
+    }
+}
+
+void write_log()
+{
+    char filename[1000];
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+
+    sprintf(filename, "/home/pi/ram/retroleds-%04d%02d%02d.log", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+    FILE *fp = fopen(filename, "a");
+    if (fp == NULL)
+    {
+        fprintf(stderr, "Could not open file %s\n", filename);
+        return;
+    }
+
+    for (int i = 0; i < MAX_LOG_LINES; ++i)
+    {
+        if (log_lines[i] != NULL)
+        {
+            fputs(log_lines[i], fp);
+            fputc('\n', fp);
+        }
+    }
+
+    fclose(fp);
+}
+
+void log_line(const char* format, ...)
+{
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char dest[1000];
+
+    sprintf(dest, "%02d:%02d:%02d|", tm.tm_hour, tm.tm_min, tm.tm_sec);
+    /* pointer to the variable arguments list */
+    va_list pargs;
+
+    /* Initialise pargs to point to the first optional argument */
+    va_start(pargs, format);
+
+    int n_chars = vsprintf(dest + strlen(dest), format, pargs);
+
+    va_end(pargs);
+
+    int i;
+    for (i = 0; i < MAX_LOG_LINES; ++i)
+    {
+        if (log_lines[i] == NULL)
+        {
+            log_lines[i] = malloc(strlen(dest) + 1);
+            strcpy(log_lines[i], dest);
+            break;
+        }
+    }
+
+    if (i == MAX_LOG_LINES - 1)
+    {
+        write_log();
+        free_log();
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+int main(int argc, char **argv)
+{
+    init_log();
+    log_line("Starting %s", argv[0]);
+
     srand(time(NULL));
 
     printf("Initializing...\n");
     printf("Pin: %d  Leds: %d\n", GPIO_PIN, LED_COUNT);
+    log_line("Pin: %d  Leds: %d", GPIO_PIN, LED_COUNT);
     if (!neo_init(GPIO_PIN, LED_COUNT))
     {
         return 1;
@@ -2029,7 +2126,9 @@ int main(void)
     }
 
     printf("%d patterns\n", pattern_count);
+    log_line("%d patterns", pattern_count);
 
+    int patterns_run = 0;
     start();
     tick();
     while (!neo_loop_stop())
@@ -2037,6 +2136,7 @@ int main(void)
         printf("\rPattern %d ", orders[pattern] + 1);
         fflush(stdout);
 
+        patterns_run++;
         (patterns[orders[pattern]])();
         SLEEP(0.25);
         strip_clear();
@@ -2060,7 +2160,11 @@ int main(void)
     strip_render();
 
     printf("\nCleaning up\n");
+    log_line("Ran %d patterns", patterns_run);
+    log_line("Cleaning up");
     neo_deinit(false);
 
+    write_log();
+    free_log();
     return 0;
 }
