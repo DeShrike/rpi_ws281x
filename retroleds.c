@@ -2254,6 +2254,45 @@ void pattern50(void)
     }
 }
 
+void pattern51(void)
+{
+    start();
+    strip_clear();
+    int colors_count = sizeof(colors) / sizeof(colors[0]);
+    int ix = 0;
+    int dix = 1;
+    int cix1 = (float)rand() / RAND_MAX * colors_count;
+    int cix2 = (float)rand() / RAND_MAX * colors_count;
+    while (!neo_loop_stop() && (DURATION < PATTERN_DURATION * 2))
+    {
+        strip_clear();
+        for (int i = 0; i <= ix; ++i)
+        {
+            strip_set(top[i % HORI], colors[cix1]);
+            strip_set(bottom[(HORI - i - 1) % HORI], colors[cix2]);
+        }
+
+        strip_render();
+
+        SLEEP(0.025);
+        tick();
+
+        ix = ix + dix;
+        if (ix < 0)
+        {
+            ix = 0;
+            dix = 1;
+            cix1 = (float)rand() / RAND_MAX * colors_count;
+            cix2 = (float)rand() / RAND_MAX * colors_count;
+        }
+        else if (ix >= HORI)
+        {
+            ix = HORI - 1;
+            dix = -1;
+        }
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -2364,7 +2403,7 @@ int main(int argc, char **argv)
 
     int pattern = 0;
 
-    //pattern_func *patterns[] = { pattern49, pattern50 };
+    //pattern_func *patterns[] = { pattern51 };
     pattern_func *patterns[] = { pattern1, pattern2, pattern3, pattern4, pattern5,
                                  pattern6, pattern7, pattern8, pattern9, pattern10,
                                  pattern11, pattern12, pattern13, pattern14, pattern15,
@@ -2374,7 +2413,8 @@ int main(int argc, char **argv)
                                  pattern31, pattern32, pattern33, pattern34, pattern35,
                                  pattern36, pattern37, pattern38, pattern39, pattern40,
                                  pattern41, pattern42, pattern43, pattern44, pattern45,
-                                 pattern46, pattern47, pattern48, pattern49, pattern50 };
+                                 pattern46, pattern47, pattern48, pattern49, pattern50,
+                                 pattern51 };
     int pattern_count = sizeof(patterns) / sizeof(patterns[0]);
 
     int* orders = malloc(pattern_count * sizeof(int));
