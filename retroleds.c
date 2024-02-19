@@ -2358,6 +2358,7 @@ int main(int argc, char **argv)
     log_line("Pin: %d  Leds: %d", GPIO_PIN, LED_COUNT);
     if (!neo_init(GPIO_PIN, LED_COUNT))
     {
+        log_line("ERROR: neo_init() failed");
         return 1;
     }
 
